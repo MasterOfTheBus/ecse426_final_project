@@ -1,6 +1,50 @@
 #include "wireless.h"
 
+static uint8_t SendByte(uint8_t byte);
 static void LowLevel_Init(void);
+
+__IO uint32_t Timeout = FLAG_TIMEOUT;
+
+TIMEOUT_UserCallback() {
+	while (1);
+}
+
+void CC2500_Init(CC2500_InitTypeDef *CC2500_InitStruct) {
+	uint8_t crtl1 = 0x00;
+	
+	LowLevel_Init();
+	
+	// control registers?
+}
+
+void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite) {
+	
+}
+
+void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead) {
+	
+}
+
+static uint8_t SendByte(uint8_t byte) {
+	 /* Loop while DR register in not empty */
+  Timeout = FLAG_TIMEOUT;
+  while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+  {
+    if((Timeout--) == 0) return TIMEOUT_UserCallback();
+  }
+  
+  /* Send a Byte through the SPI peripheral */
+  SPI_I2S_SendData(L3GD20_SPI, (uint16_t)byte);
+  /* Wait to receive a Byte */
+  Timeout = FLAG_TIMEOUT;
+  while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
+  {
+    if((Timeout--) == 0) return TIMEOUT_UserCallback();
+  }
+  
+  /* Return the Byte read from the SPI bus */
+  return (uint8_t)SPI_I2S_ReceiveData(SPI1);
+}
 
 /**
   * @brief  Initializes the low level interface used to drive the wireless components
@@ -25,8 +69,8 @@ static void LowLevel_Init(void)
   GPIO_PinAFConfig(GPIOA, GPIO_PinSource6, GPIO_AF_SPI1); // MISO
 	GPIO_PinAFConfig(GPIOA, GPIO_PinSource7, GPIO_AF_SPI1); // MOSI
 
-  /* Enable CS  GPIO clock */
-//  RCC_AHB1PeriphClockCmd(LIS302DL_SPI_CS_GPIO_CLK, ENABLE);
+  /* Enable CS  GPIO clock */ // use GPIOA again
+  //RCC_AHB1PeriphClockCmd(LIS302DL_SPI_CS_GPIO_CLK, ENABLE);
 	
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -67,12 +111,12 @@ static void LowLevel_Init(void)
   SPI_Cmd(SPI1, ENABLE);
 
   /* Configure GPIO PIN for Lis Chip select */
-//  GPIO_InitStructure.GPIO_Pin = LIS302DL_SPI_CS_PIN;
-//  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-//  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-//  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//  GPIO_Init(LIS302DL_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
 
   /* Deselect : Chip Select high */
-//  GPIO_SetBits(LIS302DL_SPI_CS_GPIO_PORT, LIS302DL_SPI_CS_PIN);
+  GPIO_SetBits(GPIOA, GPIO_Pin_9);
 }

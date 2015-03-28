@@ -1,6 +1,8 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
 
+#define FLAG_TIMEOUT             ((uint32_t)0x1000)
+
 typedef struct
 {
 	uint8_t Power_Mode;
@@ -17,5 +19,5 @@ typedef struct
 void CC2500_Init(CC2500_InitTypeDef *CC2500_InitStruct);
 //void CC2500_InterruptConfig(CC2500_InterruptConfigTypeDef *CC2500_InterruptConfigStruct);
 //void CC2500_ReadMSG(int32_t* out);
-//void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
-//void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
+void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
+void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
