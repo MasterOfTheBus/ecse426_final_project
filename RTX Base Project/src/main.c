@@ -7,6 +7,7 @@
 #include "stm32f4xx.h"                  // Device header
 #include "stm32f4xx_conf.h"
 #include "motors.h"
+#include "wireless.h"
 #include <stdio.h>
 
 int motor_0_angle;
@@ -84,6 +85,11 @@ void TIM3_IRQHandler(void)
 		osSignalSet(motor_1_thread_id, 0x01);
 		osSignalSet(motor_2_thread_id, 0x01);
 	}
+}
+
+// To test wireless module and SPI
+void wireless_testbench (){
+	wireless_Init();
 }
 
 

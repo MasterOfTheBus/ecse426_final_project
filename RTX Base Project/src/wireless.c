@@ -6,51 +6,7 @@ int TIMEOUT_UserCallback() {
 	while (1);
 }
 
-void CC2500_Init(wireless_InitTypeDef *CC2500_InitStruct) {
-	uint8_t crtl1 = 0x00;
-	LowLevel_Init();
-	// TODO: control registers?
-}
-
-void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead) {
-	// TODO
-}
-
-void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite) {
-	// TODO
-}
-
-/**
-  * @brief  Sends a byte through SPI protocol
-  * @param  1 byte to send through SPI
-  * @retval 1 byte returned by SPI
-  */
-static uint8_t SendByte(uint8_t byte) {
-	
-	// Loop while DR register is not empty
-  Timeout = FLAG_TIMEOUT;
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET){
-		if((Timeout--) == 0) return TIMEOUT_UserCallback();
-  }
-  
-  // Send a Byte through the SPI peripheral
-  SPI_I2S_SendData(SPI1, (uint16_t)byte);
-  
-	// Wait to receive a Byte
-  Timeout = FLAG_TIMEOUT;
-  while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET){
-    if((Timeout--) == 0) return TIMEOUT_UserCallback();
-  }
-  
-  // Return the Byte read from the SPI bus
-  return (uint8_t)SPI_I2S_ReceiveData(SPI1);
-}
-
-/**
-  * @brief  Initializes the low level interface used to drive the wireless components
-  * @param  None
-  * @retval None
-  */
+// Initializes the low level interface used to drive the wireless components
 static void LowLevel_Init(void){
   GPIO_InitTypeDef GPIO_InitStructure;
   SPI_InitTypeDef  SPI_InitStructure;
@@ -120,3 +76,42 @@ static void LowLevel_Init(void){
   // Deselect : Chip Select high
   GPIO_SetBits(GPIOA, GPIO_Pin_9);
 }
+
+
+// Sends a byte through SPI protocol
+static uint8_t SendByte(uint8_t byte) {
+	
+	// Loop while DR register is not empty
+  Timeout = FLAG_TIMEOUT;
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET){
+		if((Timeout--) == 0) return TIMEOUT_UserCallback();
+  }
+  
+  // Send a Byte through the SPI peripheral
+  SPI_I2S_SendData(SPI1, (uint16_t)byte);
+  
+	// Wait to receive a Byte
+  Timeout = FLAG_TIMEOUT;
+  while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET){
+    if((Timeout--) == 0) return TIMEOUT_UserCallback();
+  }
+  
+  // Return the Byte read from the SPI bus
+  return (uint8_t)SPI_I2S_ReceiveData(SPI1);
+}
+
+void wireless_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead) {
+	// TODO
+}
+
+void wireless_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite) {
+	// TODO
+}
+
+void wireless_Init() {
+	uint8_t crtl1 = 0x00;
+	LowLevel_Init();
+	// TODO: control registers?
+}
+
+
