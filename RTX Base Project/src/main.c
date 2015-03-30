@@ -46,10 +46,30 @@ osThreadId motor_0_thread_id;
 osThreadId motor_1_thread_id;
 osThreadId motor_2_thread_id;
 
+
+// To test wireless module and SPI
+void wireless_testbench (){
+	// initialize wireless SPI
+	wireless_Init();
+	
+	uint8_t buffer[] = {8};
+	uint8_t address = 0x30;
+	uint16_t bytes = 0x01;
+	
+	SPI_Write (buffer, address, bytes);
+	*buffer = 1;
+	SPI_Read (buffer, address, bytes);
+	
+	printf ("Value: %i", *buffer);
+}
+
 /*
  * main: initialize and start the system
  */
 int main (void) {
+	
+	//wireless_testbench ();
+	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
 	// ID for thread
@@ -87,10 +107,6 @@ void TIM3_IRQHandler(void)
 	}
 }
 
-// To test wireless module and SPI
-void wireless_testbench (){
-	wireless_Init();
-}
 
 
 

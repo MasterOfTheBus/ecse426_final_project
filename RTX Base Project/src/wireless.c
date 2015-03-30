@@ -2,13 +2,6 @@
 
 __IO uint32_t Timeout = FLAG_TIMEOUT;
 
-/* Read/Write command */
-#define READWRITE_CMD              ((uint8_t)0x80) 
-/* Multiple byte read/write command */ 
-#define MULTIPLEBYTE_CMD           ((uint8_t)0x40)
-/* Dummy Byte Send by the SPI Master device in order to generate the Clock to the Slave device */
-#define DUMMY_BYTE                 ((uint8_t)0x00)
-
 int TIMEOUT_UserCallback() {
 	while (1);
 }
@@ -153,10 +146,10 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	// start SPI
 	CC2500_CS_LOW();
 	
-	// send desired source address of read
+	// send desired destination address of write
 	SendByte(address);
 	
-	// for each byte in the buffer to registers through SPI
+	// send each byte in the buffer to registers through SPI
 	while (bytesToWrite > 0x00){
 		SendByte (*pBuffer);
 		pBuffer ++;
