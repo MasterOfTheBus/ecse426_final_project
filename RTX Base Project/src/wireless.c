@@ -48,6 +48,9 @@ static void LowLevel_Init(void){
 	// NSS pin configuration
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
+	#define CC2500_CS_LOW()       GPIO_ResetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_CS_PIN)
+	#define CC2500_CS_HIGH()      GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_CS_PIN)
 
   /* SPI configuration -------------------------------------------------------*/
 	// make sure you know why these are this way
@@ -100,8 +103,19 @@ static uint8_t SendByte(uint8_t byte) {
   return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 }
 
-void wireless_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead) {
-	// TODO
+void wireless_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
+	
+	// enable Read/Write mode
+	uint8_t RW_mode = 0x80;
+	
+	// if more than 1 byte to read, enable burst mode
+	uint8_t burst_mode = 0x00;
+	if (bytesToRead > 0x01){
+		burst_mode = 0x40;
+	}
+	
+	// concatenate R/W and Burst bits to address
+	address = RW_mode | burst_mode | address;
 }
 
 void wireless_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite) {
