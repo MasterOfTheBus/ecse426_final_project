@@ -8,6 +8,9 @@
 *.dep
 obj/
 
+# Listing files
+lst/
+
 # Precompiled Headers
 *.gch
 *.pch
