@@ -107,9 +107,9 @@ static uint8_t SendByte(uint8_t byte) {
   return (uint8_t)SPI_I2S_ReceiveData(CC2500_SPI);
 }
 
-void wireless_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
+void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
 	
-	// enable Read/Write mode
+	// enable Read mode
 	uint8_t RW_mode = 0x80;
 	
 	// if more than 1 byte to read, enable burst mode
@@ -120,32 +120,51 @@ void wireless_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
 	
 	// concatenate R/W and Burst bits to address
 	address = RW_mode | burst_mode | address;
+
+	// start SPI
+	CC2500_CS_LOW();
+	
+	// send desired source address of read
+	SendByte(address);
+	
+	// for each byte to read, send a dummy byte through SPI
+	// send byte returned by SPI to buffer
+	while (bytesToRead > 0x00){
+		*pBuffer = SendByte (0x00);
+		pBuffer ++;
+		bytesToRead--;
+	}
+		
+	// end SPI
+	CC2500_CS_HIGH();
 }
 
-void wireless_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite) {
-	  /* Configure the MS bit: 
-       - When 0, the address will remain unchanged in multiple read/write commands.
-       - When 1, the address will be auto incremented in multiple read/write commands.
-  */
-  if(NumByteToWrite > 0x01)
-  {
-    WriteAddr |= (uint8_t)MULTIPLEBYTE_CMD;
-  }
-  /* Set chip select Low at the start of the transmission */
-  CC2500_CS_LOW();
-  
-  /* Send the Address of the indexed register */
-  SendByte(WriteAddr);
-  /* Send the data that will be written into the device (MSB First) */
-  while(NumByteToWrite >= 0x01)
-  {
-    SendByte(*pBuffer);
-    NumByteToWrite--;
-    pBuffer++;
-  }
-  
-  /* Set chip select High at the end of the transmission */ 
-  CC2500_CS_HIGH();
+void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
+			
+	// if more than 1 byte to write, enable burst mode
+	uint8_t burst_mode = 0x00;
+	if (bytesToWrite > 0x01){
+		burst_mode = 0x40;
+	}
+	
+	// concatenate Burst bit to address
+	address = burst_mode | address;
+	
+	// start SPI
+	CC2500_CS_LOW();
+	
+	// send desired source address of read
+	SendByte(address);
+	
+	// for each byte in the buffer to registers through SPI
+	while (bytesToWrite > 0x00){
+		SendByte (*pBuffer);
+		pBuffer ++;
+		bytesToWrite--;
+	}
+		
+	// end SPI
+	CC2500_CS_HIGH();
 }
 
 void wireless_Init() {
