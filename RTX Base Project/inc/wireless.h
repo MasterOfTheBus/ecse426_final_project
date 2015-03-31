@@ -1,5 +1,6 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
+#include <stdio.h>
 
 /* Generalize the file for transmitter and receiver on different boards */
 #define TRANSMITTER 0x00
@@ -30,6 +31,20 @@
 #define CC2500_SPI_MOSI_PIN    	GPIO_Pin_7
 
 #endif
+
+#define SRES 0x30
+#define SFSTXON 0x31
+#define SXOFF 0x32
+#define SCAL 0x33
+#define SRX 0x34
+#define STX 0x35
+#define SIDLE 0x36
+#define SWOR 0x38
+#define SPWD 0x39
+#define SFRX 0x3A
+#define SFTX 0x3B
+#define SWORRST 0x3C
+#define SNOP 0x3D        
 
 /* Define macros for general use */
 

@@ -6,15 +6,36 @@ int TIMEOUT_UserCallback() {
 	while (1);
 }
 
+uint8_t CC2500_state;
+
+void delay(long num_ticks){
+	while(num_ticks-- > 0);
+}
+
+uint8_t CC2500_Strobe(uint8_t Strobe){
+	CC2500_CS_LOW();
+
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE)== RESET);	// check flag for transmission to be RESET
+	SPI_I2S_SendData(SPI1, Strobe);												// condition satisfied --> send command strobe
+
+	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);		// check flag for being busy to be SET
+	CC2500_state = (SPI_I2S_ReceiveData(SPI1) & 0x70) >> 4;											// set status to most recent received data on SPI1
+
+	// Set chip select High at the end of the transmission
+	CC2500_CS_HIGH();   
+	return CC2500_state;
+}
+
 // Initializes the low level interface used to drive the wireless components
 static void LowLevel_Init(void){
-  GPIO_InitTypeDef GPIO_InitStructure;
+  
+	GPIO_InitTypeDef GPIO_InitStructure;
   SPI_InitTypeDef  SPI_InitStructure;
 
   // Enable the SPI periph
   RCC_APB2PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
-
-  // Enable NSS, SCK, MOSI and MISO GPIO clocks
+  
+	// Enable NSS, SCK, MOSI and MISO GPIO clocks
 	// PA4, PA5, PA7, PA6 */
 	RCC_AHB1PeriphClockCmd(CC2500_SPI_GPIO_CLK, ENABLE);
 	
@@ -24,10 +45,6 @@ static void LowLevel_Init(void){
   GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN, CC2500_SPI_GPIO_AF); // MISO
 	GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MOSI_PIN, CC2500_SPI_GPIO_AF); // MOSI
 
-  // Enable CS  GPIO clock
-	// use GPIOA again
-  //RCC_AHB1PeriphClockCmd(LIS302DL_SPI_CS_GPIO_CLK, ENABLE);
-	
   GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;
@@ -75,6 +92,23 @@ static void LowLevel_Init(void){
 
   // Deselect : Chip Select high
   GPIO_SetBits(CC2500_SPI_GPIO_PORT, CC2500_SPI_NSS_PIN);
+	
+	CC2500_CS_LOW();
+	delay(100);
+	CC2500_CS_HIGH();
+	delay(100);
+	CC2500_CS_LOW();
+	delay(150);
+	
+	// Send reset command
+	CC2500_Strobe(SRES); 
+	
+	while(!GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN));
+		
+	CC2500_CS_HIGH();
+	
+	// Set to IDLE state
+	CC2500_Strobe(SIDLE);
 }
 
 
@@ -88,7 +122,7 @@ static uint8_t SendByte(uint8_t byte) {
   }
   
   // Send a Byte through the SPI peripheral
-  SPI_I2S_SendData(SPI1, (uint16_t)byte);
+  SPI_I2S_SendData(CC2500_SPI, (uint16_t)byte);
   
 	// Wait to receive a Byte
   Timeout = FLAG_TIMEOUT;
@@ -113,7 +147,7 @@ void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
 	
 	// concatenate R/W and Burst bits to address
 	address = RW_mode | burst_mode | address;
-
+  printf ("Read Add: %i", address);
 	// start SPI
 	CC2500_CS_LOW();
 	
@@ -142,7 +176,7 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	
 	// concatenate Burst bit to address
 	address = burst_mode | address;
-	
+	printf ("Write Add: %i", address);
 	// start SPI
 	CC2500_CS_LOW();
 	
@@ -159,6 +193,8 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	// end SPI
 	CC2500_CS_HIGH();
 }
+
+
 
 void wireless_Init() {
 	uint8_t crtl1 = 0x00;
