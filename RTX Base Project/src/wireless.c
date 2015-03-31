@@ -15,11 +15,11 @@ void delay(long num_ticks){
 uint8_t CC2500_Strobe(uint8_t Strobe){
 	CC2500_CS_LOW();
 
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE)== RESET);	// check flag for transmission to be RESET
-	SPI_I2S_SendData(SPI1, Strobe);												// condition satisfied --> send command strobe
+	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_TXE)== RESET);	// check flag for transmission to be RESET
+	SPI_I2S_SendData(CC2500_SPI, Strobe);												// condition satisfied --> send command strobe
 
-	while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET);		// check flag for being busy to be SET
-	CC2500_state = (SPI_I2S_ReceiveData(SPI1) & 0x70) >> 4;											// set status to most recent received data on SPI1
+	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_BSY) == SET);		// check flag for being busy to be SET
+	CC2500_state = (SPI_I2S_ReceiveData(CC2500_SPI) & 0x70) >> 4;											// set status to most recent received data on SPI1
 
 	// Set chip select High at the end of the transmission
 	CC2500_CS_HIGH();   
@@ -33,17 +33,18 @@ static void LowLevel_Init(void){
   SPI_InitTypeDef  SPI_InitStructure;
 
   // Enable the SPI periph
-  RCC_APB2PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
+  RCC_APB1PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
   
 	// Enable NSS, SCK, MOSI and MISO GPIO clocks
-	// PA4, PA5, PA7, PA6 */
 	RCC_AHB1PeriphClockCmd(CC2500_SPI_GPIO_CLK, ENABLE);
 	
+	// Enable CSn clock
+	//RCC_AHB1PeriphClockCmd(CC2500_SPI_CS_GPIO_CLK, ENABLE);
+	
 	// Alternate Functions
-	GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_NSS_PIN, CC2500_SPI_GPIO_AF); // NSS - not slave select, similar to chip select
-  GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_SCK_PIN, CC2500_SPI_GPIO_AF); // SCK
-  GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN, CC2500_SPI_GPIO_AF); // MISO
-	GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MOSI_PIN, CC2500_SPI_GPIO_AF); // MOSI
+  GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_SCK_SOURCE, CC2500_SPI_GPIO_AF); // SCK
+  GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_SOURCE, CC2500_SPI_GPIO_AF); // MISO
+	GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MOSI_SOURCE, CC2500_SPI_GPIO_AF); // MOSI
 
   GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -61,10 +62,6 @@ static void LowLevel_Init(void){
   //SPI MISO pin configuration
   GPIO_InitStructure.GPIO_Pin = CC2500_SPI_MISO_PIN;
   GPIO_Init(CC2500_SPI_GPIO_PORT, &GPIO_InitStructure);
-	
-	// NSS pin configuration
-	GPIO_InitStructure.GPIO_Pin = CC2500_SPI_NSS_PIN;
-	GPIO_Init(CC2500_SPI_GPIO_PORT, &GPIO_InitStructure);
 
   /* SPI configuration -------------------------------------------------------*/
 	// make sure you know why these are this way
@@ -74,7 +71,7 @@ static void LowLevel_Init(void){
   SPI_InitStructure.SPI_CPOL 							= SPI_CPOL_Low; // polarity as per section 3.1 of configuring cc2500
   SPI_InitStructure.SPI_CPHA 							= SPI_CPHA_1Edge; // phase as per section 3.1 of configuring cc2500
   SPI_InitStructure.SPI_NSS 							= SPI_NSS_Soft;
-  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
   SPI_InitStructure.SPI_FirstBit 					= SPI_FirstBit_MSB;
   SPI_InitStructure.SPI_CRCPolynomial 		= 7;
   SPI_InitStructure.SPI_Mode 							= SPI_Mode_Master; // master mode as per section 3.1
@@ -84,14 +81,14 @@ static void LowLevel_Init(void){
   SPI_Cmd(CC2500_SPI, ENABLE);
 
   // Configure GPIO PIN for Lis Chip select
-//  GPIO_InitStructure.GPIO_Pin 	= GPIO_Pin_9;
-//  GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_OUT;
-//  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-//  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  GPIO_InitStructure.GPIO_Pin 	= CC2500_SPI_NSS_PIN;
+  GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
 
   // Deselect : Chip Select high
-  GPIO_SetBits(CC2500_SPI_GPIO_PORT, CC2500_SPI_NSS_PIN);
+  GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN);
 	
 	CC2500_CS_LOW();
 	delay(100);
@@ -147,7 +144,7 @@ void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
 	
 	// concatenate R/W and Burst bits to address
 	address = RW_mode | burst_mode | address;
-  printf ("Read Add: %i", address);
+  printf ("Read Add: %i \n", address);
 	// start SPI
 	CC2500_CS_LOW();
 	
@@ -176,7 +173,7 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	
 	// concatenate Burst bit to address
 	address = burst_mode | address;
-	printf ("Write Add: %i", address);
+	printf ("Write Add: %i \n", address);
 	// start SPI
 	CC2500_CS_LOW();
 	
@@ -200,9 +197,7 @@ void wireless_Init() {
 	uint8_t crtl1 = 0x00;
 	LowLevel_Init();
 	// TODO: control registers?
-	
-	// automatic power on
-	
+
 }
 
 

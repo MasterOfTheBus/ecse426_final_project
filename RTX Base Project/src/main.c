@@ -53,14 +53,14 @@ void wireless_testbench (){
 	wireless_Init();
 	
 	uint8_t buffer[] = {8};
-	uint8_t address = 0x30;
-	uint16_t bytes = 0x01;
+	uint8_t address = 0x36;
+	uint16_t bytes = 0x02;
 	
-	SPI_Write (buffer, address, bytes);
+	//SPI_Write (buffer, address, bytes);
 	*buffer = 1;
 	SPI_Read (buffer, address, bytes);
 	
-	printf ("Value: %i", *buffer);
+	printf ("Value: %i \n", *buffer);
 }
 
 /*
@@ -68,30 +68,30 @@ void wireless_testbench (){
  */
 int main (void) {
 	
-	//wireless_testbench ();
-	
+	wireless_testbench ();
+//	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
-	
-	// ID for thread
-	osThreadId	Blinky_thread;
-	
-  // initialize peripherals here
-	Blinky_GPIO_Init();
-	motors_init();
-	
-	// angle from 0 to 180
-	motor_0_angle = 45;
-	//motor_1_angle = 90;
-	//motor_2_angle = 45;
-	
-  // create 'thread' functions that start executing,
-  // example: tid_name = osThreadCreate (osThread(name), NULL);
-	Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
-	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
-	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
-	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
-	
-	
+//	
+//	// ID for thread
+//	osThreadId	Blinky_thread;
+//	
+//  // initialize peripherals here
+//	Blinky_GPIO_Init();
+//	motors_init();
+//	
+//	// angle from 0 to 180
+//	motor_0_angle = 45;
+//	//motor_1_angle = 90;
+//	//motor_2_angle = 45;
+//	
+//  // create 'thread' functions that start executing,
+//  // example: tid_name = osThreadCreate (osThread(name), NULL);
+//	Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
+//	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
+//	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
+//	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
+//	
+//	
 	osKernelStart ();                         // start thread execution 
 	
 }

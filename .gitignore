@@ -37,3 +37,5 @@ lst/
 
 # Backups
 *.bak
+
+*.uvguix.*
