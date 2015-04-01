@@ -37,5 +37,7 @@ lst/
 
 # Backups
 *.bak
+*.tmp
 
+# Projects
 *.uvguix.*
