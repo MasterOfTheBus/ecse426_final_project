@@ -1,4 +1,5 @@
 #include "motors.h"
+#include "math.h"
 
 void motors_init(){
 	// Hardware clock init
@@ -100,6 +101,54 @@ void motor_2_thread(void const *argument){
 	while(1){
 		osSignalWait(0x01, osWaitForever);
 		set_angle(motor_2_angle, 2);
+	}
+}
+
+void goTo(double x, double y){
+	
+	if(x<x_min) x=x_min;
+	else if(x>x_max) x=x_max;
+		
+	if (y<y_min) y=y_min;
+	else if(y>y_max) y=y_max;
+			
+	double c_l = sqrt(pow(x+motor_position, 2)+pow(y,2));
+	double c_r = sqrt(pow(x-motor_position, 2)+pow(y,2));
+	
+	double alpha_l = acos((pow(arm_a,2)+pow(c_l, 2)-pow(arm_b,2))/(2*arm_a*c_l));
+	double alpha_r = acos((pow(arm_a,2)+pow(c_r, 2)-pow(arm_b,2))/(2*arm_a*c_r));
+	
+	double beta_l;
+	double beta_r;
+	
+	if (x > motor_position){
+		beta_l = atan(y/(x+motor_position));
+		beta_r = PI-atan(y/(x-motor_position));
+	}else if(x < motor_position||x > -motor_position){
+		beta_l = atan(y/(x+motor_position));
+		beta_r = PI-atan(y/(motor_position-x));
+	}else if(x < -motor_position){
+		beta_l = PI-atan(y/fabs(x+motor_position));
+		beta_r = atan(y/(-x+motor_position));
+	}else if(x == motor_position){
+		beta_l = atan(y/(x+motor_position));
+		beta_r = PI/2;
+	}else {
+		beta_l = PI/2;
+		beta_r = atan(y/(-x+motor_position));
+	}
+	
+	printf("beta l is: %f\n beta r is: %f\n",beta_l, beta_r);
+	
+	motor_0_angle = (180/PI)*(alpha_l+beta_l);
+	motor_1_angle = (180/PI)*(alpha_r+beta_r);
+		
+}
+
+void draw_LroR(double x, double y){
+	while (x<x+segm_length){
+		goTo(x, y);
+		x += step_size;	
 	}
 }
 

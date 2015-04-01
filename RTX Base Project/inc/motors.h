@@ -15,6 +15,24 @@
 #define MOTOR_1 GPIO_Pin_12
 #define MOTOR_2 GPIO_Pin_13
 
+// Constants
+#define arm_a (double) 6.5
+#define arm_b (double) 7
+#define motor_position (double) 1.9
+#define segm_length 1
+#define step_size 0.1
+	
+#define PI 3.14159265359
+
+
+// Frame
+#define x_max 7
+#define x_min -7
+#define y_max 12
+#define y_min 6
+
+
+
 extern int motor_0_angle;
 extern int motor_1_angle;
 extern int motor_2_angle;
@@ -26,6 +44,9 @@ void set_angle(int angle, int motor);
 void motor_0_thread(void const *argument);
 void motor_1_thread(void const *argument);
 void motor_2_thread(void const *argument);
+
+void goTo(double x, double y);
+void draw_LroR(double x, double y);
 
 #endif
 
