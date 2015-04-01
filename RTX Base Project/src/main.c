@@ -52,15 +52,26 @@ void wireless_testbench (){
 	// initialize wireless SPI
 	wireless_Init();
 	
-	uint8_t buffer[] = {8};
-	uint8_t address = 0x36;
+	uint8_t buffer[2];
+	uint8_t address = 0x31;
 	uint16_t bytes = 0x02;
 	
-	//SPI_Write (buffer, address, bytes);
-	*buffer = 1;
+	buffer[0] = 1;
+	printf("buffer before: %i\n", buffer[0]);
 	SPI_Read (buffer, address, bytes);
+
+	printf ("Value after: %i \n", buffer[0]);
+
+	uint8_t w_buffer[] = {8};
+	printf("value writing: %i\n", w_buffer[0]);
+	uint8_t r_buffer[1];
+	address = 0x06;
+	bytes = 0x01;
 	
-	printf ("Value: %i \n", *buffer);
+	SPI_Write (w_buffer, address, bytes);
+	SPI_Read (r_buffer, address, bytes);
+	
+	printf ("Value: %i \n", r_buffer[0]);
 }
 
 /*

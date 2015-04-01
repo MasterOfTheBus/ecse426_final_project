@@ -100,12 +100,13 @@ static void LowLevel_Init(void){
 	// Send reset command
 	CC2500_Strobe(SRES); 
 	
-	while(!GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN));
+	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
+	//while(!GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN));
 		
 	CC2500_CS_HIGH();
 	
 	// Set to IDLE state
-	CC2500_Strobe(SIDLE);
+	//CC2500_Strobe(SIDLE);
 }
 
 
@@ -119,7 +120,7 @@ static uint8_t SendByte(uint8_t byte) {
   }
   
   // Send a Byte through the SPI peripheral
-  SPI_I2S_SendData(CC2500_SPI, (uint16_t)byte);
+  SPI_I2S_SendData(CC2500_SPI, byte);
   
 	// Wait to receive a Byte
   Timeout = FLAG_TIMEOUT;
@@ -155,6 +156,7 @@ void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead) {
 	// send byte returned by SPI to buffer
 	while (bytesToRead > 0x00){
 		*pBuffer = SendByte (0x00);
+		printf("Value read: %i\n", *pBuffer);
 		pBuffer ++;
 		bytesToRead--;
 	}
@@ -182,6 +184,7 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	
 	// send each byte in the buffer to registers through SPI
 	while (bytesToWrite > 0x00){
+		printf("Value to write: %i\n", *pBuffer);
 		SendByte (*pBuffer);
 		pBuffer ++;
 		bytesToWrite--;
