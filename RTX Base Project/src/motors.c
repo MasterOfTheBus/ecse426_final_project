@@ -86,7 +86,7 @@ void set_angle(int angle, int motor){
 void motor_0_thread(void const *argument){
 	while(1){
 		osSignalWait(0x01, osWaitForever);
-		set_angle(motor_0_angle, 0);
+		set_angle(180 - motor_0_angle, 0);
 	}
 }
 
@@ -124,11 +124,11 @@ void goTo(double x, double y){
 	if (x > motor_position){
 		beta_l = atan(y/(x+motor_position));
 		beta_r = PI-atan(y/(x-motor_position));
-	}else if(x < motor_position||x > -motor_position){
+	}else if(x < motor_position && x > -motor_position){
 		beta_l = atan(y/(x+motor_position));
-		beta_r = PI-atan(y/(motor_position-x));
+		beta_r = atan(y/(motor_position-x));
 	}else if(x < -motor_position){
-		beta_l = PI-atan(y/fabs(x+motor_position));
+		beta_l = PI-atan(y/(-x-motor_position));
 		beta_r = atan(y/(-x+motor_position));
 	}else if(x == motor_position){
 		beta_l = atan(y/(x+motor_position));
@@ -138,10 +138,14 @@ void goTo(double x, double y){
 		beta_r = atan(y/(-x+motor_position));
 	}
 	
-	printf("beta l is: %f\n beta r is: %f\n",beta_l, beta_r);
-	
-	motor_0_angle = (180/PI)*(alpha_l+beta_l);
+	motor_0_angle = ((180/PI)*(alpha_l+beta_l));
 	motor_1_angle = (180/PI)*(alpha_r+beta_r);
+
+	printf("position : {%f,%f}\n", x, y);
+	printf("beta l is: %f\n",  beta_l);
+	printf("beta r is: %f\n", beta_r);
+	printf("motor 0 is: %d\n", motor_0_angle);
+	printf("motor 1 is: %d\n", motor_1_angle);
 		
 }
 

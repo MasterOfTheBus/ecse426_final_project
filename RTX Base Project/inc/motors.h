@@ -33,9 +33,9 @@
 
 
 
-extern int motor_0_angle;
-extern int motor_1_angle;
-extern int motor_2_angle;
+extern double motor_0_angle;
+extern double motor_1_angle;
+extern double motor_2_angle;
 
 void motors_init();
 void enable_motor(int motor);
