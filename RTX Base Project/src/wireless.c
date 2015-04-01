@@ -1,8 +1,9 @@
 #include "wireless.h"
+#include "cc2500_settings.h"
 
 __IO uint32_t Timeout = FLAG_TIMEOUT;
 
-int TIMEOUT_UserCallback() {
+int TIMEOUT_UserCallback(void) {
 	while (1);
 }
 
@@ -196,10 +197,71 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 
 
 
-void wireless_Init() {
+void wireless_Init(void) {
 	uint8_t crtl1 = 0x00;
 	LowLevel_Init();
-	// TODO: control registers?
+
+	// Settings
+	uint8_t w_buffer[47];
+	
+	w_buffer[0] = VAL_CC2500_IOCFG2;
+	w_buffer[1] = 0x00; // doesn't matter for this application
+	w_buffer[2] = VAL_CC2500_IOCFG0;
+	w_buffer[3] = VAL_CC2500_FIFOTHR;
+	w_buffer[4] = 0x00;
+	
+	w_buffer[5] = 0x00;
+	w_buffer[6] = VAL_CC2500_PKTLEN;
+	w_buffer[7] = VAL_CC2500_PKTCTRL1;
+	w_buffer[8] = VAL_CC2500_PKTCTRL0;
+	w_buffer[9] = VAL_CC2500_ADDR;
+	
+	w_buffer[10] = VAL_CC2500_CHANNR;
+	w_buffer[11] = VAL_CC2500_FSCTRL1;
+	w_buffer[12] = VAL_CC2500_FSCTRL0;
+	w_buffer[13] = VAL_CC2500_FREQ2;
+	w_buffer[14] = VAL_CC2500_FREQ1;
+	
+	w_buffer[15] = VAL_CC2500_FREQ0;
+	w_buffer[16] = VAL_CC2500_MDMCFG4;
+	w_buffer[17] = VAL_CC2500_MDMCFG3;
+	w_buffer[18] = VAL_CC2500_MDMCFG2;
+	w_buffer[19] = VAL_CC2500_MDMCFG1;
+	
+	w_buffer[20] = VAL_CC2500_MDMCFG0;
+	w_buffer[21] = VAL_CC2500_DEVIATN;
+	w_buffer[22] = 0x00;
+	w_buffer[23] = VAL_CC2500_MCSM1;
+	w_buffer[24] = VAL_CC2500_MCSM0;
+	
+	w_buffer[25] = VAL_CC2500_FOCCFG;
+	w_buffer[26] = VAL_CC2500_BSCFG;
+	w_buffer[27] = VAL_CC2500_AGCTRL2;
+	w_buffer[28] = VAL_CC2500_AGCTRL1;
+	w_buffer[29] = VAL_CC2500_AGCTRL0;
+	
+	w_buffer[30] = 0x00;
+	w_buffer[31] = 0x00;
+	w_buffer[32] = 0x00;
+	w_buffer[33] = VAL_CC2500_FREND1;
+	w_buffer[34] = VAL_CC2500_FREND0;
+	
+	w_buffer[35] = VAL_CC2500_FSCAL3;
+	w_buffer[36] = VAL_CC2500_FSCAL2;
+	w_buffer[37] = VAL_CC2500_FSCAL1;
+	w_buffer[38] = VAL_CC2500_FSCAL0;
+	w_buffer[39] = 0x00;
+	
+	w_buffer[40] = 0x00;
+	w_buffer[41] = VAL_CC2500_FSTEST;
+	w_buffer[42] = 0x00;
+	w_buffer[43] = 0x00;
+	w_buffer[44] = VAL_CC2500_TEST2;
+	
+	w_buffer[45] = VAL_CC2500_TEST1;
+	w_buffer[46] = VAL_CC2500_TEST0;
+	
+	SPI_Write(w_buffer, 0x00, 47);
 
 }
 

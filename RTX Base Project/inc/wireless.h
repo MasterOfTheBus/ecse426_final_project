@@ -46,6 +46,8 @@
 #define CC2500_CS_HIGH()      GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
 
 static uint8_t SendByte(uint8_t byte);
-void wireless_Init();
+void wireless_Init(void);
 void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
+void Receive();
+void Transmit();
