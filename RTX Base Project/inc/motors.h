@@ -21,6 +21,7 @@
 #define motor_position (double) 1.9
 #define segm_length 1
 #define step_size 0.1
+#define edge 3 // must be less than or equal to 3
 	
 #define PI 3.14159265359
 
@@ -31,6 +32,10 @@
 #define y_max 12
 #define y_min 6
 
+// Path
+//#define array_length 120
+//extern double x_path[array_length];
+//extern double y_path[array_length];
 
 
 extern double motor_0_angle;
