@@ -174,6 +174,8 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 		burst_mode = 0x40;
 	}
 	
+	printf("bytes to write: %i\n", bytesToWrite);
+	
 	// concatenate Burst bit to address
 	address = burst_mode | address;
 	printf ("Write Add: %i \n", address);
@@ -195,7 +197,37 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	CC2500_CS_HIGH();
 }
 
+void Transmit(uint8_t *buffer) {
+	
+}
 
+void ReadRecvBuffer(uint8_t *buffer) {
+	CC2500_CS_LOW();
+	
+	CC2500_Strobe(SRX);
+	
+	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
+	
+	uint8_t bytes_avail = CC2500_Strobe(SNOP) & 0x0F;
+	
+	if (bytes_avail > 0) {
+		if (bytes_avail > 1) {
+			SPI_Read(buffer, 0xBF, bytes_avail);
+			printf("received: %i\n", buffer[0]);
+		} else {
+			SPI_Read(buffer, 0xFF, bytes_avail);
+			printf("received: %i\n", buffer[0]);
+		}
+	}
+	
+	CC2500_Strobe(SIDLE);
+	
+	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
+	
+	CC2500_Strobe(SFRX);
+		
+	CC2500_CS_HIGH();
+}
 
 void wireless_Init(void) {
 	uint8_t crtl1 = 0x00;

@@ -52,6 +52,10 @@ void wireless_testbench (){
 	// initialize wireless SPI
 	wireless_Init();
 	
+	printf("\n\n");
+	
+	// ------------------ SPI testing -----------------------
+	
 	uint8_t buffer[2];
 	uint8_t address = 0x31;
 	uint16_t bytes = 0x02;
@@ -72,6 +76,14 @@ void wireless_testbench (){
 	SPI_Read (r_buffer, address, bytes);
 	
 	printf ("Value: %i \n", r_buffer[0]);
+	
+	printf("\n\n\n");
+	
+	// ---------------- Receive testing --------------------
+	
+	while (1) {
+		ReadRecvBuffer(r_buffer);
+	}
 }
 
 /*
