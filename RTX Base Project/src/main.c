@@ -13,6 +13,8 @@
 double motor_0_angle;
 double motor_1_angle;
 double motor_2_angle;
+double x_path[array_length] = {0};
+double y_path[array_length] = {0};
 
 void Blinky_GPIO_Init(void){
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -44,10 +46,18 @@ void Blinky(void const *argument){
 //		osDelay(2000);
 //		goTo(5,6);
 //		osDelay(2000);
-		for(double x = 6; x < 11; x = x + 0.1){
-			goTo(0, x);
+		
+//		for(double x = 6; x < 11; x = x + 0.1){
+//			goTo(0, x);
+//			osDelay(200);
+//			if(x == 10.9) x = 6;
+//		}
+		
+		
+		for(int i=0; i < 50; i++){
+			goTo(x_path[i], y_path[i]);
 			osDelay(200);
-			if(x == 10.9) x = 6;
+	
 		}
 	}
 }
@@ -83,6 +93,7 @@ void wireless_testbench (){
  * main: initialize and start the system
  */
 int main (void) {
+	drawSquare(2.0,7.0);
 	
 	//wireless_testbench ();
 //	

@@ -419,6 +419,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\motors.c</FilePath>
             </File>
+            <File>
+              <FileName>wireless.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\wireless.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

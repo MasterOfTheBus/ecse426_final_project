@@ -144,45 +144,11 @@ void goTo(double x, double y){
 	printf("position : {%f,%f}\n", x, y);
 	printf("beta l is: %f\n",  beta_l);
 	printf("beta r is: %f\n", beta_r);
-	printf("motor 0 is: %i\n", motor_0_angle);
-	printf("motor 1 is: %i\n", motor_1_angle);
+	printf("motor 0 is: %d\n", motor_0_angle);
+	printf("motor 1 is: %d\n", motor_1_angle);
 		
 }
 
-//void draw_LroR(double x, double y){
-//	while (x<x+segm_length){
-//		goTo(x, y);
-//		x += step_size;	
-//	}
-//}
-
-
-void setPath(double x, double y, int mode, int direction){
-	double x_start = x;
-	double y_start = y;
-	if (mode == 1){			// drawing mode
-	
-		if (direction >= 0 && direction <= 360){	// draw segment of length 1cm in this direction
-			
-			
-		} else if (direction == -1){			// reset
-			
-			
-		} else if (direction == 401){			// draw a square
-			drawSquare(x_start, y_start);
-			
-		} else if (direction == 402){			// draw a rectangle
-			drawRectangle(x_start, y_start);
-			
-		} else if (direction ==403){			// draw a triangle
-			drawTriangle(x_start, y_start);
-		}
-		
-	}else if (mode ==2){		// game mode
-		
-	
-	}
-}
 void drawSquare(double x, double y){
 		
 	x_path[0] = x;
@@ -230,15 +196,16 @@ void drawSquare(double x, double y){
 				x_path[i] = x_path[i-1]+step_size;
 				y_path[i] = y_path[i-1];
 			}
-		
+
 		}
+	for(i;i<array_length;i++){
+		x_path[i] = x_path[i-1];
+		y_path[i] = y_path[i-1];
+	}
 	
 }
-void drawRectangle(double x, double y){
-	
-	
-}
-void drawTriangle(double x, double y){
-	
-	
-}
+
+
+
+
+

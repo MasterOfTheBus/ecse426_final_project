@@ -20,8 +20,7 @@
 #define arm_b (double) 7
 #define motor_position (double) 1.9
 #define segm_length 1
-#define step_size 0.1
-#define edge 3 // must be less than or equal to 3
+#define step_size 0.5
 	
 #define PI 3.14159265359
 
@@ -32,11 +31,12 @@
 #define y_max 12
 #define y_min 6
 
-// Path
-//#define array_length 120
-//extern double x_path[array_length];
-//extern double y_path[array_length];
 
+// Path
+#define edge 3
+#define array_length 50
+extern double x_path[array_length];
+extern double y_path[array_length];
 
 extern double motor_0_angle;
 extern double motor_1_angle;
@@ -51,14 +51,7 @@ void motor_1_thread(void const *argument);
 void motor_2_thread(void const *argument);
 
 void goTo(double x, double y);
-//void draw_LroR(double x, double y);
-void setPath(double x, double y, int mode, int direction);
-void drawLine(double x, double y, int direction);
-void drawSquare(double x, double y);
-void drawRectangle(double x, double y);
-void drawTriangle(double x, double y);
-
-
+void draw_LroR(double x, double y);
 
 #endif
 
