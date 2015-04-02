@@ -48,6 +48,13 @@ void motor_2_thread(void const *argument);
 void goTo(double x, double y);
 //void draw_LroR(double x, double y);
 void setPath(double x, double y, int mode, int direction);
+void drawLine(double x, double y, int direction);
+void drawSquare(double x, double y);
+void drawRectangle(double x, double y);
+void drawTriangle(double x, double y);
+
+
+
 #endif
 
 
