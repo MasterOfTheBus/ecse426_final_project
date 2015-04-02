@@ -46,8 +46,8 @@ void motor_1_thread(void const *argument);
 void motor_2_thread(void const *argument);
 
 void goTo(double x, double y);
-void draw_LroR(double x, double y);
-
+//void draw_LroR(double x, double y);
+void setPath(double x, double y, int mode, int direction);
 #endif
 
 
