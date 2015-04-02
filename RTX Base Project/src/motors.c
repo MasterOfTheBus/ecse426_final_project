@@ -144,8 +144,8 @@ void goTo(double x, double y){
 	printf("position : {%f,%f}\n", x, y);
 	printf("beta l is: %f\n",  beta_l);
 	printf("beta r is: %f\n", beta_r);
-	printf("motor 0 is: %d\n", motor_0_angle);
-	printf("motor 1 is: %d\n", motor_1_angle);
+	printf("motor 0 is: %i\n", motor_0_angle);
+	printf("motor 1 is: %i\n", motor_1_angle);
 		
 }
 
@@ -175,17 +175,63 @@ void setPath(double x, double y, int mode, int direction){
 			drawRectangle(x_start, y_start);
 			
 		} else if (direction ==403){			// draw a triangle
-			drawTrangle(x_start, y_start);
+			drawTriangle(x_start, y_start);
 		}
 		
-	}
-	else if (mode ==2)		// game mode
+	}else if (mode ==2){		// game mode
 		
 	
 	}
 }
 void drawSquare(double x, double y){
+		
+	x_path[0] = x;
+	y_path[0] = y;
 	
+	int i;
+	int a;
+	int b;
+	int c;
+	int d;
+	
+	if (x >= 0 && y >= 9){ 						// start at upper right corner
+		a=1;
+		b=2;
+		c=3;
+		d=4;
+	}else if(x >= 0 && y < 9){				// start at lower right corner
+		a=4;
+		b=1;
+		c=2;
+		d=3;
+	}else if(x < 0 && y >= 9){				// start at upper left corner
+		a=2;
+		b=3;
+		c=4;
+		d=1;
+	}else if(x < 0 && y < 9){					// start at lower left corner
+		a=3;
+		b=4;
+		c=1;
+		d=2;
+	}
+	
+	for (i = 1; i<=4*(edge/step_size); i++){
+			if (i<=(a*edge/step_size)){
+				x_path[i] = x_path[i-1];
+				y_path[i] = y_path[i-1]-step_size;
+			} else if(i<=(b*edge/step_size)){
+				x_path[i] = x_path[i-1]-step_size;
+				y_path[i] = y_path[i-1];
+			} else if(i<=(c*edge/step_size)){
+				x_path[i] = x_path[i-1];
+				y_path[i] = y_path[i-1]+step_size;
+			}else if(i<=(d*edge/step_size)){
+				x_path[i] = x_path[i-1]+step_size;
+				y_path[i] = y_path[i-1];
+			}
+		
+		}
 	
 }
 void drawRectangle(double x, double y){
