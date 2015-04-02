@@ -158,9 +158,41 @@ void goTo(double x, double y){
 
 
 void setPath(double x, double y, int mode, int direction){
+	double x_start = x;
+	double y_start = y;
+	if (mode == 1){			// drawing mode
+	
+		if (direction >= 0 && direction <= 360){	// draw segment of length 1cm in this direction
+			
+			
+		} else if (direction == -1){			// reset
+			
+			
+		} else if (direction == 401){			// draw a square
+			drawSquare(x_start, y_start);
+			
+		} else if (direction == 402){			// draw a rectangle
+			drawRectangle(x_start, y_start);
+			
+		} else if (direction ==403){			// draw a triangle
+			drawTrangle(x_start, y_start);
+		}
+		
+	}
+	else if (mode ==2)		// game mode
+		
+	
+	}
+}
+void drawSquare(double x, double y){
 	
 	
 }
-
-
-
+void drawRectangle(double x, double y){
+	
+	
+}
+void drawTriangle(double x, double y){
+	
+	
+}
