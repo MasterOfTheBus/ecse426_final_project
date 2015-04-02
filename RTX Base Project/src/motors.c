@@ -149,11 +149,17 @@ void goTo(double x, double y){
 		
 }
 
-void draw_LroR(double x, double y){
-	while (x<x+segm_length){
-		goTo(x, y);
-		x += step_size;	
-	}
+//void draw_LroR(double x, double y){
+//	while (x<x+segm_length){
+//		goTo(x, y);
+//		x += step_size;	
+//	}
+//}
+
+
+void setPath(double x, double y, int mode, int direction){
+	
+	
 }
 
 
