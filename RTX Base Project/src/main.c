@@ -56,7 +56,8 @@ void Blinky(void const *argument){
 		
 		for(int i=0; i < 50; i++){
 			goTo(x_path[i], y_path[i]);
-			osDelay(200);
+			printf("position : {%f,%f}\n", x_path[i], y_path[i]);
+			osDelay(50);
 	
 		}
 	}
@@ -93,11 +94,11 @@ void wireless_testbench (){
  * main: initialize and start the system
  */
 int main (void) {
-	drawSquare(2.0,7.0);
+	drawRectangle(2.0,7.0);
 	
 	//wireless_testbench ();
 //	
- // osKernelInitialize ();                    // initialize CMSIS-RTOS
+  osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
 	// ID for thread
 	osThreadId	Blinky_thread;
@@ -109,27 +110,17 @@ int main (void) {
 	// angle from 0 to 180
 	//motor_0_angle = 45;
 	//motor_1_angle = 90;
-	//motor_2_angle = 45;
+	motor_2_angle = 90;
 	
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
 	Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
 	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
 	motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
-	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
+	motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
 	
+	osKernelStart ();                         // start thread execution 
 	
-	//osKernelStart ();                         // start thread execution 
-	
-//	while(1){
-//		goTo(0, 8);
-//		goTo(-3, 8);
-//		goTo(3, 8);
-//		goTo(-1.6, 8);
-//		goTo(1.6, 8);
-//		goTo(1.9,8);
-//		goTo(-1.9,8);
-//	}
 }
 
 void TIM3_IRQHandler(void)

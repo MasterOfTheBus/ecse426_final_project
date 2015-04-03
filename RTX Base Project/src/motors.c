@@ -141,16 +141,19 @@ void goTo(double x, double y){
 	motor_0_angle = ((180/PI)*(alpha_l+beta_l));
 	motor_1_angle = (180/PI)*(alpha_r+beta_r);
 
-	printf("position : {%f,%f}\n", x, y);
-	printf("beta l is: %f\n",  beta_l);
-	printf("beta r is: %f\n", beta_r);
-	printf("motor 0 is: %d\n", motor_0_angle);
-	printf("motor 1 is: %d\n", motor_1_angle);
+//	printf("position : {%f,%f}\n", x, y);
+//	printf("beta l is: %f\n",  beta_l);
+//	printf("beta r is: %f\n", beta_r);
+//	printf("motor 0 is: %f\n", motor_0_angle);
+//	printf("motor 1 is: %f\n", motor_1_angle);
 		
 }
 
 void drawSquare(double x, double y){
-		
+	
+	if(x < x_min+square_side) x = x_min+square_side;
+	if(y < y_min+square_side) y = y_min+square_side;
+	
 	x_path[0] = x;
 	y_path[0] = y;
 	
@@ -160,52 +163,116 @@ void drawSquare(double x, double y){
 	int c;
 	int d;
 	
-	if (x >= 0 && y >= 9){ 						// start at upper right corner
-		a=1;
-		b=2;
-		c=3;
-		d=4;
-	}else if(x >= 0 && y < 9){				// start at lower right corner
-		a=4;
-		b=1;
-		c=2;
-		d=3;
-	}else if(x < 0 && y >= 9){				// start at upper left corner
-		a=2;
-		b=3;
-		c=4;
-		d=1;
-	}else if(x < 0 && y < 9){					// start at lower left corner
-		a=3;
-		b=4;
-		c=1;
-		d=2;
+	a=1;
+	b=2;
+	c=3;
+	d=4;
+	
+//	if (x >= 0 && y >= 9){ 						// start at upper right corner
+//		a=1;
+//		b=2;
+//		c=3;
+//		d=4;
+//	}else if(x >= 0 && y < 9){				// start at lower right corner
+//		a=4;
+//		b=1;
+//		c=2;
+//		d=3;
+//	}else if(x < 0 && y >= 9){				// start at upper left corner
+//		a=2;
+//		b=3;
+//		c=4;
+//		d=1;
+//	}else if(x < 0 && y < 9){					// start at lower left corner
+//		a=3;
+//		b=4;
+//		c=1;
+//		d=2;
+//	}
+	for (i = 1; i<=4*(square_side/step_size); i++){
+		if (i<=(a*square_side/step_size)){
+			x_path[i] = x_path[i-1];
+			y_path[i] = y_path[i-1]-step_size;
+		} else if(i<=(b*square_side/step_size)){
+			x_path[i] = x_path[i-1]-step_size;
+			y_path[i] = y_path[i-1];
+		} else if(i<=(c*square_side/step_size)){
+			x_path[i] = x_path[i-1];
+			y_path[i] = y_path[i-1]+step_size;
+		}else if(i<=(d*square_side/step_size)){
+			x_path[i] = x_path[i-1]+step_size;
+			y_path[i] = y_path[i-1];
+		}
 	}
 	
-	for (i = 1; i<=4*(edge/step_size); i++){
-			if (i<=(a*edge/step_size)){
-				x_path[i] = x_path[i-1];
-				y_path[i] = y_path[i-1]-step_size;
-			} else if(i<=(b*edge/step_size)){
-				x_path[i] = x_path[i-1]-step_size;
-				y_path[i] = y_path[i-1];
-			} else if(i<=(c*edge/step_size)){
-				x_path[i] = x_path[i-1];
-				y_path[i] = y_path[i-1]+step_size;
-			}else if(i<=(d*edge/step_size)){
-				x_path[i] = x_path[i-1]+step_size;
-				y_path[i] = y_path[i-1];
-			}
-
-		}
-	for(i;i<array_length;i++){
+	for(;i<array_length;i++){
 		x_path[i] = x_path[i-1];
 		y_path[i] = y_path[i-1];
 	}
 	
 }
 
+void drawRectangle(double x, double y){
+	
+	if(x < x_min+rect_x) x = x_min+rect_x;
+	if(y < y_min+rect_y) y = y_min+rect_y;
+	
+	x_path[0] = x;
+	y_path[0] = y;
+	
+	int i;
+	
+	for (i = 1; i<=2*((rect_x+rect_y)/step_size); i++){
+		if (i<=(rect_x/step_size)){
+			x_path[i] = x_path[i-1];
+			y_path[i] = y_path[i-1]-step_size;
+		} else if(i<=((rect_x+rect_y)/step_size)){
+			x_path[i] = x_path[i-1]-step_size;
+			y_path[i] = y_path[i-1];
+		} else if(i<=((2*rect_x+rect_y)/step_size)){
+			x_path[i] = x_path[i-1];
+			y_path[i] = y_path[i-1]+step_size;
+		}else if(i<=((2*(rect_x+rect_y))/step_size)){
+			x_path[i] = x_path[i-1]+step_size;
+			y_path[i] = y_path[i-1];
+		}
 
+	}
+	
+	for(;i<array_length;i++){
+		x_path[i] = x_path[i-1];
+		y_path[i] = y_path[i-1];
+	}
+	
+}
 
+void drawTriangle(double x, double y){
+	
+	if(x < x_min+triangle_side) x = x_min+triangle_side;
+	if(y > y_max-triangle_side) y = y_max-triangle_side;
+	
+	x_path[0] = x;
+	y_path[0] = y;
+	
+	int i;
+	
+	for (i = 1; i<3*(triangle_side/step_size); i++){
+		if (i<=(triangle_side/step_size)){
+			x_path[i] = x_path[i-1]-(step_size/2);
+			y_path[i] = y_path[i-1]+(sqrt(3)*step_size/2);
+		} else if(i<=((2*triangle_side)/step_size)){
+			x_path[i] = x_path[i-1]-(step_size/2);
+			y_path[i] = y_path[i-1]-(sqrt(3)*step_size/2);
+		} else if(i<=((3*triangle_side)/step_size)){
+			x_path[i] = x_path[i-1]+step_size;
+			y_path[i] = y_path[i-1];
+		}
 
+	}
+	for(;i<array_length;i++){
+		x_path[i] = x_path[i-1];
+		y_path[i] = y_path[i-1];
+	}
+	
+}
 

@@ -3,6 +3,7 @@
 
 #include "stm32f4xx_gpio.h"
 #include "osObjects.h"
+#include "stdio.h"
 
 // GPIO MOTOR CLOCKS
 #define MOTOR_CLOCK RCC_AHB1Periph_GPIOB
@@ -33,7 +34,10 @@
 
 
 // Path
-#define edge 3
+#define square_side 3
+#define rect_x 2
+#define rect_y 4
+#define triangle_side 3
 #define array_length 50
 extern double x_path[array_length];
 extern double y_path[array_length];
@@ -52,6 +56,9 @@ void motor_2_thread(void const *argument);
 
 void goTo(double x, double y);
 void draw_LroR(double x, double y);
+void drawSquare(double x, double y);
+void drawRectangle(double x, double y);
+void drawTriangle(double x, double y);
 
 #endif
 
