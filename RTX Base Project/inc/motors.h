@@ -39,6 +39,10 @@
 #define rect_y 4
 #define triangle_side 3
 #define array_length 50
+
+extern double current_x;
+extern double current_y;
+
 extern double x_path[array_length];
 extern double y_path[array_length];
 

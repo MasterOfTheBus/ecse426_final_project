@@ -141,6 +141,9 @@ void goTo(double x, double y){
 	motor_0_angle = ((180/PI)*(alpha_l+beta_l));
 	motor_1_angle = (180/PI)*(alpha_r+beta_r);
 
+	current_x = x;
+	current_y = y;
+	
 //	printf("position : {%f,%f}\n", x, y);
 //	printf("beta l is: %f\n",  beta_l);
 //	printf("beta r is: %f\n", beta_r);
@@ -275,4 +278,6 @@ void drawTriangle(double x, double y){
 	}
 	
 }
+
+
 

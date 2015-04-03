@@ -131,7 +131,6 @@ void MEMS_read_value () {
 }
 
 double get_pitch() {
-	double pitch;
 	MEMS_read_value ();
 	//Tri-axis tilt sensing method for calculation pitch and roll
 	pitch = (180/PI) * atan2(x_data,z_data);//((180.0/PI)*atan(x_data/(sqrt((y_data*y_data)+(z_data*z_data)))));
@@ -143,7 +142,6 @@ double get_pitch() {
 
 double get_roll() {
 	
-	double roll;
 	MEMS_read_value ();
 	//Tri-axis tilt sensing method for calculation pitch and roll
 	roll = (180/PI) * atan2(y_data,z_data);//((180.0/PI)*atan(y_data/(sqrt((x_data*x_data)+(z_data*z_data)))));
@@ -151,6 +149,14 @@ double get_roll() {
 	//printf ("roll: %f\n", roll);
 	return roll;
 		
+}
+
+void angle_thread(void const *argument){
+	while(1){
+		osSignalWait(0x01, osWaitForever);
+		pitch = get_pitch();
+		roll = get_roll();
+	}
 }
 
 

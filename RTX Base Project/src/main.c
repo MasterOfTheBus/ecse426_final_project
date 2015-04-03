@@ -8,11 +8,17 @@
 #include "stm32f4xx_conf.h"
 #include "motors.h"
 #include "wireless.h"
+#include "MEMS.h"
 #include <stdio.h>
+
+double pitch;
+double roll;
 
 double motor_0_angle;
 double motor_1_angle;
 double motor_2_angle;
+double current_x;
+double current_y;
 double x_path[array_length] = {0};
 double y_path[array_length] = {0};
 
@@ -28,6 +34,28 @@ void Blinky_GPIO_Init(void){
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
   GPIO_Init(GPIOD, &GPIO_InitStructure);
 	
+}
+
+void set_xy_thread(void const *argument){
+	while(1){
+		printf("roll: %f\n", roll);
+		printf("pitch: %f\n", pitch);
+		printf("x: %f\n", current_x);
+		printf("y: %f\n", current_y);
+		
+		double new_x = current_x;
+		double new_y = current_y;
+		
+		if(pitch < - 30) new_x = current_x + 0.2;
+		else if(pitch > 30) new_x = current_x - 0.2;
+		
+		if(roll < - 30) new_y = current_y + 0.2;
+		else if(roll > 30) new_y = current_y - 0.2;
+		
+		goTo (new_x,new_y);
+		
+		osDelay(50);
+	}
 }
 
 void Blinky(void const *argument){
@@ -56,7 +84,7 @@ void Blinky(void const *argument){
 		
 		for(int i=0; i < 50; i++){
 			goTo(x_path[i], y_path[i]);
-			printf("position : {%f,%f}\n", x_path[i], y_path[i]);
+			//printf("position : {%f,%f}\n", x_path[i], y_path[i]);
 			osDelay(50);
 	
 		}
@@ -64,60 +92,50 @@ void Blinky(void const *argument){
 }
 
 osThreadDef(Blinky, osPriorityNormal, 1, 0);
-
+osThreadDef(set_xy_thread, osPriorityNormal, 1, 0);
 osThreadDef(motor_0_thread, osPriorityNormal, 1, 0);
 osThreadDef(motor_2_thread, osPriorityNormal, 1, 0);
 osThreadDef(motor_1_thread, osPriorityNormal, 1, 0);
+osThreadDef(angle_thread, osPriorityNormal, 1, 0);
 
+// ID for thread
+osThreadId Blinky_thread;
+osThreadId set_xy_thread_id;
 osThreadId motor_0_thread_id;
 osThreadId motor_1_thread_id;
 osThreadId motor_2_thread_id;
+osThreadId angle_thread_id;
 
-
-// To test wireless module and SPI
-void wireless_testbench (){
-	// initialize wireless SPI
-	wireless_Init();
-	
-	uint8_t buffer[] = {8};
-	uint8_t address = 0x36;
-	uint16_t bytes = 0x02;
-	
-	//SPI_Write (buffer, address, bytes);
-	*buffer = 1;
-	SPI_Read (buffer, address, bytes);
-	
-	printf ("Value: %i \n", *buffer);
-}
 
 /*
  * main: initialize and start the system
  */
 int main (void) {
-	drawRectangle(2.0,7.0);
-	
-	//wireless_testbench ();
-//	
+	drawTriangle(0.0,7.0);
+
   osKernelInitialize ();                    // initialize CMSIS-RTOS
-	
-	// ID for thread
-	osThreadId	Blinky_thread;
 	
   // initialize peripherals here
 	Blinky_GPIO_Init();
 	motors_init();
+	MEMS_config();
+	MEMS_interrupt_config();
 	
 	// angle from 0 to 180
 	//motor_0_angle = 45;
 	//motor_1_angle = 90;
-	motor_2_angle = 90;
+	//motor_2_angle = 90;
 	
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
-	Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
+	//Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
+	set_xy_thread_id = osThreadCreate(osThread(set_xy_thread), NULL);
 	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
 	motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
 	motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
+	
+	angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
+	
 	
 	osKernelStart ();                         // start thread execution 
 	
@@ -135,5 +153,12 @@ void TIM3_IRQHandler(void)
 }
 
 
+void EXTI0_IRQHandler(void){
+	if(EXTI_GetITStatus(EXTI_Line0) != RESET){
+		// clear the flag in the sensor's end
+		EXTI_ClearITPendingBit(EXTI_Line0);
+		osSignalSet(angle_thread_id, 0x01);
+	}
+}
 
 
