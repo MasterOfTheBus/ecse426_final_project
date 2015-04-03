@@ -19,7 +19,7 @@ uint8_t CC2500_Strobe(uint8_t Strobe){
 	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_TXE)== RESET);	// check flag for transmission to be RESET
 	SPI_I2S_SendData(CC2500_SPI, Strobe);												// condition satisfied --> send command strobe
 
-	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_BSY) == SET);		// check flag for being busy to be SET
+	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_RXNE) == RESET);		// check flag for being busy to be SET
 	CC2500_state = (SPI_I2S_ReceiveData(CC2500_SPI) & 0x70) >> 4;											// set status to most recent received data on SPI1
 
 	// Set chip select High at the end of the transmission
@@ -232,7 +232,7 @@ void ReadRecvBuffer(uint8_t *buffer) {
 void wireless_Init(void) {
 	uint8_t crtl1 = 0x00;
 	LowLevel_Init();
-
+	
 	// Settings
 	uint8_t w_buffer[47];
 	

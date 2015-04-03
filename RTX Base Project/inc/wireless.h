@@ -47,7 +47,9 @@
 
 static uint8_t SendByte(uint8_t byte);
 void wireless_Init(void);
+uint8_t CC2500_Strobe(uint8_t Strobe);
 void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void ReadRecvBuffer(uint8_t *buffer);
 void Transmit(uint8_t *buffer);
+void delay(long num_ticks);

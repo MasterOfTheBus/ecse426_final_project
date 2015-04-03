@@ -60,12 +60,19 @@ void wireless_testbench (){
 	uint8_t address = 0x31;
 	uint16_t bytes = 0x02;
 	
+	// --- Strobe ----
+	uint8_t status;
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n\n", status);
+	
+	// ---- Read -----
 	buffer[0] = 1;
 	printf("buffer before: %i\n", buffer[0]);
 	SPI_Read (buffer, address, bytes);
 
-	printf ("Value after: %i \n", buffer[0]);
+	printf ("Value after: %i \n\n", buffer[0]);
 
+	// --- Write ---
 	uint8_t w_buffer[] = {8};
 	printf("value writing: %i\n", w_buffer[0]);
 	uint8_t r_buffer[1];
@@ -79,11 +86,35 @@ void wireless_testbench (){
 	
 	printf("\n\n\n");
 	
+	// -- Strobe again ---
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
+	
+	//delay(100);
+	
+	status = CC2500_Strobe(SRX);
+	printf("status: 0x%02x\n", status);
+	
+	//delay(100);
+	
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
+	
+	//delay (100);
+	
+	status = CC2500_Strobe(SIDLE);
+	printf("status: 0x%02x\n", status);
+	
+	//delay(100);
+	
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
+	
 	// ---------------- Receive testing --------------------
 	
-	while (1) {
-		ReadRecvBuffer(r_buffer);
-	}
+//	while (1) {
+//		ReadRecvBuffer(r_buffer);
+//	}
 }
 
 /*
