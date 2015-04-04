@@ -38,6 +38,7 @@
 #define rect_x 2
 #define rect_y 4
 #define triangle_side 3
+#define segment_length 2
 #define array_length 50
 
 extern double current_x;
@@ -65,6 +66,7 @@ void draw_LroR(double x, double y);
 void drawSquare(double x, double y);
 void drawRectangle(double x, double y);
 void drawTriangle(double x, double y);
+void drawSegment(double x, double y, double angle);
 
 #endif
 

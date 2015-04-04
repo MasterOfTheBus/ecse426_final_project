@@ -171,48 +171,18 @@ void drawSquare(double x, double y){
 	y_path[0] = y;
 	
 	int i;
-	int a;
-	int b;
-	int c;
-	int d;
-	
-	a=1;
-	b=2;
-	c=3;
-	d=4;
-	
-//	if (x >= 0 && y >= 9){ 						// start at upper right corner
-//		a=1;
-//		b=2;
-//		c=3;
-//		d=4;
-//	}else if(x >= 0 && y < 9){				// start at lower right corner
-//		a=4;
-//		b=1;
-//		c=2;
-//		d=3;
-//	}else if(x < 0 && y >= 9){				// start at upper left corner
-//		a=2;
-//		b=3;
-//		c=4;
-//		d=1;
-//	}else if(x < 0 && y < 9){					// start at lower left corner
-//		a=3;
-//		b=4;
-//		c=1;
-//		d=2;
-//	}
+
 	for (i = 1; i<=4*(square_side/step_size); i++){
-		if (i<=(a*square_side/step_size)){
+		if (i<=(square_side/step_size)){
 			x_path[i] = x_path[i-1];
 			y_path[i] = y_path[i-1]-step_size;
-		} else if(i<=(b*square_side/step_size)){
+		} else if(i<=(2*square_side/step_size)){
 			x_path[i] = x_path[i-1]-step_size;
 			y_path[i] = y_path[i-1];
-		} else if(i<=(c*square_side/step_size)){
+		} else if(i<=(3*square_side/step_size)){
 			x_path[i] = x_path[i-1];
 			y_path[i] = y_path[i-1]+step_size;
-		}else if(i<=(d*square_side/step_size)){
+		}else if(i<=(4*square_side/step_size)){
 			x_path[i] = x_path[i-1]+step_size;
 			y_path[i] = y_path[i-1];
 		}
@@ -289,5 +259,24 @@ void drawTriangle(double x, double y){
 	
 }
 
-
+void drawSegment(double x, double y, double angle){
+	
+	if(x < x_min+triangle_side) x = x_min+triangle_side;
+	if(y > y_max-triangle_side) y = y_max-triangle_side;
+	
+	x_path[0] = x;
+	y_path[0] = y;
+	
+	int i;
+	
+	for (i = 1; i<(segment_length/step_size); i++){
+		x_path[i] = x_path[i-1]+(step_size*cos(angle * PI/180));
+		y_path[i] = y_path[i-1]+(step_size*sin(angle * PI/180));
+	}
+	for(;i<array_length;i++){
+		x_path[i] = x_path[i-1];
+		y_path[i] = y_path[i-1];
+	}
+	
+}
 
