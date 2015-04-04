@@ -45,6 +45,15 @@
 #define CC2500_CS_LOW()       GPIO_ResetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
 #define CC2500_CS_HIGH()      GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
 
+
+/*	Buffer status registers	*/
+#define CC2500REG_TXBYTES		(0x3A|0xFA)
+#define CC2500REG_RXBYTES		(0x3B|0xFB)
+
+/*	Burst access to FIFOs	*/
+#define CC2500REG_TX_FIFO		0x3F
+#define CC2500REG_RX_FIFO		0xBF
+
 static uint8_t SendByte(uint8_t byte);
 void wireless_Init(void);
 uint8_t CC2500_Strobe(uint8_t Strobe);
