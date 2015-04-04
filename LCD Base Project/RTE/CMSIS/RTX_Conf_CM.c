@@ -33,6 +33,8 @@
  *---------------------------------------------------------------------------*/
  
 #include "cmsis_os.h"
+
+#include <stdio.h>
  
 
 /*----------------------------------------------------------------------------
@@ -62,7 +64,7 @@
 //   <i> Defines stack size for main thread.
 //   <i> Default: 200
 #ifndef OS_MAINSTKSIZE
- #define OS_MAINSTKSIZE 50
+ #define OS_MAINSTKSIZE 100
 #endif
  
 //   <o>Number of threads with user-provided stack size <0-250>
@@ -270,6 +272,8 @@ void os_error (uint32_t error_code) {
   /* This function is called when a runtime error is detected.  */
   /* Parameter 'error_code' holds the runtime error code.       */
  
+	
+	printf("error code: %i\n", error_code);
   /* HERE: include optional code to be executed on runtime error. */
   switch (error_code) {
     case OS_ERROR_STACK_OVF:

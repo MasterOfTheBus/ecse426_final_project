@@ -4,24 +4,24 @@
 
 /* Generalize the file for transmitter and receiver on different boards */
 
-#define CC2500_SPI							SPI2
-#define CC2500_SPI_CLK					RCC_APB1Periph_SPI2
+#define CC2500_SPI							SPI4
+#define CC2500_SPI_CLK					RCC_APB2Periph_SPI4 // for 4
 
 /* Define the pins and ports for the configurations */
-#define CC2500_SPI_GPIO_CLK 					RCC_AHB1Periph_GPIOB
-#define CC2500_SPI_CS_GPIO_CLK				RCC_AHB1Periph_GPIOB
-#define CC2500_SPI_GPIO_PORT					GPIOB
-#define CC2500_SPI_CS_GPIO_PORT				GPIOB
-#define CC2500_SPI_GPIO_AF						GPIO_AF_SPI2
+#define CC2500_SPI_GPIO_CLK 					RCC_AHB1Periph_GPIOE
+#define CC2500_SPI_CS_GPIO_CLK				RCC_AHB1Periph_GPIOC
+#define CC2500_SPI_GPIO_PORT					GPIOE
+#define CC2500_SPI_CS_GPIO_PORT				GPIOC
+#define CC2500_SPI_GPIO_AF						GPIO_AF_SPI4
 
-#define CC2500_SPI_NSS_PIN    				GPIO_Pin_12 // p17 
-#define CC2500_SPI_SCK_PIN    				GPIO_Pin_13 // p16
-#define CC2500_SPI_MISO_PIN    				GPIO_Pin_14 // p15
-#define CC2500_SPI_MOSI_PIN    				GPIO_Pin_15 // p18
-#define CC2500_SPI_NSS_SOURCE         GPIO_PinSource12
-#define CC2500_SPI_SCK_SOURCE         GPIO_PinSource13
-#define CC2500_SPI_MISO_SOURCE        GPIO_PinSource14
-#define CC2500_SPI_MOSI_SOURCE        GPIO_PinSource15
+#define CC2500_SPI_NSS_PIN    				GPIO_Pin_13 // p17
+#define CC2500_SPI_SCK_PIN    				GPIO_Pin_2 // p16
+#define CC2500_SPI_MISO_PIN    				GPIO_Pin_5 // p15
+#define CC2500_SPI_MOSI_PIN    				GPIO_Pin_6 // p18
+#define CC2500_SPI_NSS_SOURCE         GPIO_PinSource13
+#define CC2500_SPI_SCK_SOURCE         GPIO_PinSource2
+#define CC2500_SPI_MISO_SOURCE        GPIO_PinSource5
+#define CC2500_SPI_MOSI_SOURCE        GPIO_PinSource6
 
 
 #define SRES 0x30
@@ -61,4 +61,4 @@ void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void ReadRecvBuffer(uint8_t *buffer);
 void Transmit(uint8_t *buffer);
-void delay(long num_ticks);
+void wireless_delay(long num_ticks);

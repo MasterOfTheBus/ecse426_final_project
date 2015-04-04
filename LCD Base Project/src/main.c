@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "wireless.h"
 
 static void delay(__IO uint32_t nCount)
 {
@@ -186,24 +187,122 @@ osThreadId example_1a_thread;
 osThreadId example_1b_thread;
 osThreadId example_1c_thread;
 
+// To test wireless module and SPI
+void wireless_testbench (){
+	// initialize wireless SPI
+	wireless_Init();
+	
+	printf("\n\n");
+
+	uint8_t settings_buffer[1];
+	uint8_t address = 0x00;
+	while (address < 47) {
+		SPI_Read(settings_buffer, address, 1);
+		printf("settings 0x%02x: 0x%02x\n", address, settings_buffer[0]);
+		address++;
+		if (address == 1 || address == 22) {
+			address++;
+		} else if (address == 4 || address == 39 || address == 42) {
+			address+=2;
+		} else if (address == 30) {
+			address+=3;
+		}
+	}
+#if 0
+	settings_buffer[0] = 0x06;
+	SPI_Write(settings_buffer, 0x02, 1);
+	
+	SPI_Read(settings_buffer, 0x02, 1);
+	printf("read 0x%02x\n", settings_buffer[0]);
+#endif
+	printf("\n\n");
+	
+	// ------------------ SPI testing -----------------------
+	
+	uint8_t buffer[2];
+	address = 0x31;
+	uint16_t bytes = 0x02;
+	
+	// --- Strobe ----
+	uint8_t status;
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n\n", status);
+	
+	// ---- Read -----
+	buffer[0] = 1;
+	printf("buffer before: %i\n", buffer[0]);
+	SPI_Read (buffer, address, bytes);
+
+	printf ("Value after: %i \n\n", buffer[0]);
+
+	// --- Write ---
+	uint8_t w_buffer[] = {8};
+	printf("value writing: %i\n", w_buffer[0]);
+	uint8_t r_buffer[1];
+	address = 0x06;
+	bytes = 0x01;
+	
+	SPI_Write (w_buffer, address, bytes);
+	SPI_Read (r_buffer, address, bytes);
+	
+	printf ("Value: %i \n", r_buffer[0]);
+	
+	printf("\n\n\n");
+	
+	// -- Strobe again ---
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
+	
+	wireless_delay(100);
+	
+	status = CC2500_Strobe(SRX);
+	printf("status: 0x%02x\n", status);
+	
+	wireless_delay(100);
+	
+	while (status != 0x01) {
+		status = CC2500_Strobe(SNOP);
+		printf("status: 0x%02x\n", status);
+	
+		wireless_delay (100);
+	}
+	
+	status = CC2500_Strobe(SIDLE);
+	printf("status: 0x%02x\n", status);
+	
+	wireless_delay(100);
+	
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
+	
+	// ---------------- Receive testing --------------------
+//	while (1){
+//		ReadRecvBuffer(r_buffer);
+//		delay(100);
+//	}
+
+}
+
 /*
  * main: initialize and start the system
  */
 int main (void) {
+	wireless_testbench();
+	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
   // initialize peripherals here
 	/* LCD initiatization */
-  LCD_Init();
+//  LCD_Init();
   
-  /* LCD Layer initiatization */
-  LCD_LayerInit();
-    
-  /* Enable the LTDC controler */
-  LTDC_Cmd(ENABLE);
-  
-  /* Set LCD foreground layer as the current layer */
-  LCD_SetLayer(LCD_FOREGROUND_LAYER);
+//  /* LCD Layer initiatization */
+//  LCD_LayerInit();
+//    
+//  /* Enable the LTDC controler */
+//  LTDC_Cmd(ENABLE);
+//  
+//  /* Set LCD foreground layer as the current layer */
+//  LCD_SetLayer(LCD_FOREGROUND_LAYER);
 	
 	
 	
@@ -218,7 +317,7 @@ int main (void) {
 	********************************************************/
 	
 	//example_1a_thread = osThreadCreate(osThread(example_1a), NULL);
-	example_1b_thread = osThreadCreate(osThread(example_1b), NULL);
+	//example_1b_thread = osThreadCreate(osThread(example_1b), NULL);
 	//example_1c_thread = osThreadCreate(osThread(example_1c), NULL);
 	
 	osKernelStart ();                         // start thread execution 

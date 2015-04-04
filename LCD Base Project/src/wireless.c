@@ -9,7 +9,7 @@ int TIMEOUT_UserCallback(void) {
 
 uint8_t CC2500_state;
 
-void delay(long num_ticks){
+void wireless_delay(long num_ticks){
 	while(num_ticks-- > 0);
 }
 
@@ -34,13 +34,13 @@ static void LowLevel_Init(void){
   SPI_InitTypeDef  SPI_InitStructure;
 
   // Enable the SPI periph
-  RCC_APB1PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
+  RCC_APB2PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
   
-	// Enable NSS, SCK, MOSI and MISO GPIO clocks
+	// Enable SCK, MOSI and MISO GPIO clocks
 	RCC_AHB1PeriphClockCmd(CC2500_SPI_GPIO_CLK, ENABLE);
 	
 	// Enable CSn clock
-	//RCC_AHB1PeriphClockCmd(CC2500_SPI_CS_GPIO_CLK, ENABLE);
+	RCC_AHB1PeriphClockCmd(CC2500_SPI_CS_GPIO_CLK, ENABLE);
 	
 	// Alternate Functions
   GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_SCK_SOURCE, CC2500_SPI_GPIO_AF); // SCK
@@ -92,11 +92,11 @@ static void LowLevel_Init(void){
   GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN);
 	
 	CC2500_CS_LOW();
-	delay(100);
+	wireless_delay(100);
 	CC2500_CS_HIGH();
-	delay(100);
+	wireless_delay(100);
 	CC2500_CS_LOW();
-	delay(150);
+	wireless_delay(150);
 	
 	// Send reset command
 	CC2500_Strobe(SRES); 
@@ -231,7 +231,7 @@ void ReadRecvBuffer(uint8_t *buffer) {
 			SPI_Read(&data_received, CC2500REG_RX_FIFO, 0x01);
 			printf ("data: 0x%02x\n", data_received);
 		}
-		delay(100);
+		wireless_delay(100);
 		current_status = CC2500_Strobe(SNOP);
 	}
 	
