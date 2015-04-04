@@ -40,165 +40,166 @@ void wireless_testbench (){
 	
 	printf("\n\n");
 	
-	uint8_t settings_buffer[1];
-	uint8_t address = 0x00;
-//	while (address < 47) {
-//		SPI_Read(settings_buffer, address, 1);
-//		printf("settings 0x%02x: 0x%02x\n", address, settings_buffer[0]);
-//		address++;
-//		if (address == 1 || address == 22) {
-//			address++;
-//		} else if (address == 4 || address == 39 || address == 42) {
-//			address+=2;
-//		} else if (address == 30) {
-//			address+=3;
-//		}
-//	}
+//	uint8_t settings_buffer[1];
+//	uint8_t address = 0x00;
+////	while (address < 47) {
+////		SPI_Read(settings_buffer, address, 1);
+////		printf("settings 0x%02x: 0x%02x\n", address, settings_buffer[0]);
+////		address++;
+////		if (address == 1 || address == 22) {
+////			address++;
+////		} else if (address == 4 || address == 39 || address == 42) {
+////			address+=2;
+////		} else if (address == 30) {
+////			address+=3;
+////		}
+////	}
 
-	SPI_Read(settings_buffer, 0x00, 1);
-	printf("0x00: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x02, 1);
-	printf("0x02: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x03, 1);
-printf("0x03: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x06, 1);
-printf("0x06: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x07, 1);
-printf("0x07: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x08, 1);
-printf("0x08: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x09, 1);
-printf("0x09: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x0A, 1);
-printf("0x0A: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x0B, 1);
-printf("0x0B: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x0C, 1);
-printf("0x0C: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x0D, 1);
-printf("0x0D: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x0E, 1);
-	printf("0x0E: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x0F, 1);
-printf("0x0F: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x10, 1);
-printf("16: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x11, 1);
-printf("17: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x12, 1);
-printf("18: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x13, 1);
-	printf("19: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x14, 1);
-printf("20: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x15, 1);
-printf("21: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x17, 1);
-printf("23: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x18, 1);
-printf("24: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x19, 1);
-printf("25: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x1A, 1);
-printf("26: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x1B, 1);
-printf("27: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x1C, 1);
-printf("28: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x1D, 1);
-printf("29: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x21, 1);
-printf("33: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x22, 1);
-	printf("34: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x23, 1);
-printf("35: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x24, 1);
-printf("36: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x25, 1);
-printf("37: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x26, 1);
-printf("38: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x29, 1);
-printf("41: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x2C, 1);
-printf("44: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x2D, 1);
-printf("45: 0x%02x\n", settings_buffer[0]);
-	SPI_Read(settings_buffer, 0x2E, 1);
-	printf("46: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x00, 1);
+//	printf("0x00: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x02, 1);
+//	printf("0x02: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x03, 1);
+//printf("0x03: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x06, 1);
+//printf("0x06: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x07, 1);
+//printf("0x07: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x08, 1);
+//printf("0x08: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x09, 1);
+//printf("0x09: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x0A, 1);
+//printf("0x0A: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x0B, 1);
+//printf("0x0B: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x0C, 1);
+//printf("0x0C: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x0D, 1);
+//printf("0x0D: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x0E, 1);
+//	printf("0x0E: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x0F, 1);
+//printf("0x0F: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x10, 1);
+//printf("16: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x11, 1);
+//printf("17: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x12, 1);
+//printf("18: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x13, 1);
+//	printf("19: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x14, 1);
+//printf("20: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x15, 1);
+//printf("21: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x17, 1);
+//printf("23: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x18, 1);
+//printf("24: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x19, 1);
+//printf("25: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x1A, 1);
+//printf("26: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x1B, 1);
+//printf("27: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x1C, 1);
+//printf("28: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x1D, 1);
+//printf("29: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x21, 1);
+//printf("33: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x22, 1);
+//	printf("34: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x23, 1);
+//printf("35: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x24, 1);
+//printf("36: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x25, 1);
+//printf("37: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x26, 1);
+//printf("38: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x29, 1);
+//printf("41: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x2C, 1);
+//printf("44: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x2D, 1);
+//printf("45: 0x%02x\n", settings_buffer[0]);
+//	SPI_Read(settings_buffer, 0x2E, 1);
+//	printf("46: 0x%02x\n", settings_buffer[0]);
 
-	settings_buffer[0] = 0x06;
-	SPI_Write(settings_buffer, 0x02, 1);
-	
-	SPI_Read(settings_buffer, 0x02, 1);
-	printf("read 0x%02x\n", settings_buffer[0]);
-	
-	printf("\n\n");
-	
-	// ------------------ SPI testing -----------------------
-	
-	uint8_t buffer[2];
-	address = 0x31;
-	uint16_t bytes = 0x02;
-	
-	// --- Strobe ----
-	uint8_t status;
-	status = CC2500_Strobe(SNOP);
-	printf("status: 0x%02x\n\n", status);
-	
-	// ---- Read -----
-	buffer[0] = 1;
-	printf("buffer before: %i\n", buffer[0]);
-	SPI_Read (buffer, address, bytes);
+//	settings_buffer[0] = 0x06;
+//	SPI_Write(settings_buffer, 0x02, 1);
+//	
+//	SPI_Read(settings_buffer, 0x02, 1);
+//	printf("read 0x%02x\n", settings_buffer[0]);
+//	
+//	printf("\n\n");
+//	
+//	// ------------------ SPI testing -----------------------
+//	
+//	uint8_t buffer[2];
+//	address = 0x31;
+//	uint16_t bytes = 0x02;
+//	
+//	// --- Strobe ----
+//	uint8_t status;
+//	status = CC2500_Strobe(SNOP);
+//	printf("status: 0x%02x\n\n", status);
+//	
+//	// ---- Read -----
+//	buffer[0] = 1;
+//	printf("buffer before: %i\n", buffer[0]);
+//	SPI_Read (buffer, address, bytes);
 
-	printf ("Value after: %i \n\n", buffer[0]);
+//	printf ("Value after: %i \n\n", buffer[0]);
 
-	// --- Write ---
-	uint8_t w_buffer[] = {8};
-	printf("value writing: %i\n", w_buffer[0]);
+//	// --- Write ---
+//	uint8_t w_buffer[] = {8};
+//	printf("value writing: %i\n", w_buffer[0]);
 	uint8_t r_buffer[1];
-	address = 0x06;
-	bytes = 0x01;
-	
-	SPI_Write (w_buffer, address, bytes);
-	SPI_Read (r_buffer, address, bytes);
-	
-	printf ("Value: %i \n", r_buffer[0]);
-	
-	printf("\n\n\n");
-	
-	// -- Strobe again ---
-	status = CC2500_Strobe(SNOP);
-	printf("status: 0x%02x\n", status);
-	
-	delay(100);
-	
-	status = CC2500_Strobe(SRX);
-	printf("status: 0x%02x\n", status);
-	
-	delay(100);
-	
-	while (status != 0x01) {
-		status = CC2500_Strobe(SNOP);
-		printf("status: 0x%02x\n", status);
-	
-		delay (100);
-	}
-	
-	status = CC2500_Strobe(SIDLE);
-	printf("status: 0x%02x\n", status);
-	
-	delay(100);
-	
-	status = CC2500_Strobe(SNOP);
-	printf("status: 0x%02x\n", status);
+//	address = 0x06;
+//	bytes = 0x01;
+//	
+//	SPI_Write (w_buffer, address, bytes);
+//	SPI_Read (r_buffer, address, bytes);
+//	
+//	printf ("Value: %i \n", r_buffer[0]);
+//	
+//	printf("\n\n\n");
+//	
+//	// -- Strobe again ---
+//	status = CC2500_Strobe(SNOP);
+//	printf("status: 0x%02x\n", status);
+//	
+//	delay(100);
+//	
+//	status = CC2500_Strobe(SRX);
+//	printf("status: 0x%02x\n", status);
+//	
+//	delay(100);
+//	
+//	while (status != 0x01) {
+//		status = CC2500_Strobe(SNOP);
+//		printf("status: 0x%02x\n", status);
+//	
+//		delay (100);
+//	}
+//	
+//	status = CC2500_Strobe(SIDLE);
+//	printf("status: 0x%02x\n", status);
+//	
+//	delay(100);
+//	
+//	status = CC2500_Strobe(SNOP);
+//	printf("status: 0x%02x\n", status);
 	
 	// ---------------- Receive testing --------------------
-	
-//	while (1) {
-//		ReadRecvBuffer(r_buffer);
-//	}
+	while (1){
+		ReadRecvBuffer(r_buffer);
+		delay(100);
+	}
+
 }
 
 /*
