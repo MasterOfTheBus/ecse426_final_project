@@ -275,11 +275,13 @@ void wireless_testbench (){
 	status = CC2500_Strobe(SNOP);
 	printf("status: 0x%02x\n", status);
 	
-	// ---------------- Receive testing --------------------
-//	while (1){
-//		ReadRecvBuffer(r_buffer);
-//		delay(100);
-//	}
+	// ---------------- Transmit testing --------------------
+	uint8_t i = 0;
+	while (1){
+		Transmit(&i, 1);
+		i = (i + 1) % 10;
+		delay(1);
+	}
 
 }
 

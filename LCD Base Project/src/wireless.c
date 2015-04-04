@@ -201,8 +201,44 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	CC2500_CS_HIGH();
 }
 
-void Transmit(uint8_t *buffer) {
+void Transmit(uint8_t *buffer, uint16_t num_bytes) {
+	CC2500_CS_LOW();
 	
+	uint8_t current_status;
+	current_status = CC2500_Strobe(SIDLE);								
+	
+	while (current_status != IDLE){
+		current_status = CC2500_Strobe(SNOP);
+	}
+	
+	current_status = CC2500_Strobe(STX);
+	
+	while (current_status != TX){
+		current_status = CC2500_Strobe(SNOP);
+	}
+
+//	uint8_t NumBytesinFIFO = 0x08;
+//	SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
+	//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
+	for (; num_bytes > 0; num_bytes--) {
+		// check for overflow
+		uint8_t GDO2;
+		SPI_Read(&GDO2, 0x00, 1); // check for filling past the threshold
+		if ((GDO2 & 0x1F) != 0x02) {
+			printf("transmitting: %i\n", buffer[num_bytes-1]);
+			SPI_Write(&buffer[num_bytes-1], CC2500REG_TX_FIFO, 0x01);
+		} else {
+			num_bytes++; // make sure we don't advance the loop
+		}
+		wireless_delay(100);
+	}
+	
+	current_status = CC2500_Strobe(SIDLE);
+	while (current_status != IDLE) {
+		current_status = CC2500_Strobe(SNOP);
+	}
+	
+	CC2500_CS_HIGH();
 }
 
 void ReadRecvBuffer(uint8_t *buffer) {

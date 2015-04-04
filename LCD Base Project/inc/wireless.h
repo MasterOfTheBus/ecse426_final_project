@@ -23,6 +23,9 @@
 #define CC2500_SPI_MISO_SOURCE        GPIO_PinSource5
 #define CC2500_SPI_MOSI_SOURCE        GPIO_PinSource6
 
+#define IDLE 0x00
+#define RX 0x01
+#define TX 0x02
 
 #define SRES 0x30
 #define SFSTXON 0x31
@@ -60,5 +63,5 @@ uint8_t CC2500_Strobe(uint8_t Strobe);
 void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void ReadRecvBuffer(uint8_t *buffer);
-void Transmit(uint8_t *buffer);
+void Transmit(uint8_t *buffer, uint16_t num_bytes);
 void wireless_delay(long num_ticks);

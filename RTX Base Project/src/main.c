@@ -79,47 +79,47 @@ void wireless_testbench (){
 	printf("buffer before: %i\n", buffer[0]);
 	SPI_Read (buffer, address, bytes);
 
-//	printf ("Value after: %i \n\n", buffer[0]);
+	printf ("Value after: %i \n\n", buffer[0]);
 
-//	// --- Write ---
-//	uint8_t w_buffer[] = {8};
-//	printf("value writing: %i\n", w_buffer[0]);
+	// --- Write ---
+	uint8_t w_buffer[] = {8};
+	printf("value writing: %i\n", w_buffer[0]);
 	uint8_t r_buffer[1];
-//	address = 0x06;
-//	bytes = 0x01;
-//	
-//	SPI_Write (w_buffer, address, bytes);
-//	SPI_Read (r_buffer, address, bytes);
-//	
-//	printf ("Value: %i \n", r_buffer[0]);
-//	
-//	printf("\n\n\n");
-//	
-//	// -- Strobe again ---
-//	status = CC2500_Strobe(SNOP);
-//	printf("status: 0x%02x\n", status);
-//	
-//	delay(100);
-//	
-//	status = CC2500_Strobe(SRX);
-//	printf("status: 0x%02x\n", status);
-//	
-//	delay(100);
-//	
-//	while (status != 0x01) {
-//		status = CC2500_Strobe(SNOP);
-//		printf("status: 0x%02x\n", status);
-//	
-//		delay (100);
-//	}
-//	
-//	status = CC2500_Strobe(SIDLE);
-//	printf("status: 0x%02x\n", status);
-//	
-//	delay(100);
-//	
-//	status = CC2500_Strobe(SNOP);
-//	printf("status: 0x%02x\n", status);
+	address = 0x06;
+	bytes = 0x01;
+	
+	SPI_Write (w_buffer, address, bytes);
+	SPI_Read (r_buffer, address, bytes);
+	
+	printf ("Value: %i \n", r_buffer[0]);
+	
+	printf("\n\n\n");
+	
+	// -- Strobe again ---
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
+	
+	delay(100);
+	
+	status = CC2500_Strobe(SRX);
+	printf("status: 0x%02x\n", status);
+	
+	delay(100);
+	
+	while (status != 0x01) {
+		status = CC2500_Strobe(SNOP);
+		printf("status: 0x%02x\n", status);
+	
+		delay (100);
+	}
+	
+	status = CC2500_Strobe(SIDLE);
+	printf("status: 0x%02x\n", status);
+	
+	delay(100);
+	
+	status = CC2500_Strobe(SNOP);
+	printf("status: 0x%02x\n", status);
 	
 	// ---------------- Receive testing --------------------
 	while (1){
