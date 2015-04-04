@@ -237,118 +237,93 @@ void wireless_Init(void) {
 	LowLevel_Init();
 	
 	// Settings
-	uint8_t addr = 0x00;
-	uint8_t w_buffer[47];
-	
+	uint8_t w_buffer[1];
+
 	w_buffer[0] = VAL_CC2500_IOCFG2;
 	SPI_Write(&w_buffer[0], 0x00, 1);
-	w_buffer[1] = 0x00; // doesn't matter for this application
-	w_buffer[2] = VAL_CC2500_IOCFG0;
-	SPI_Write(&w_buffer[2], 0x02, 1);
-	
-	printf("wrote for 2: 0x%02x\n", w_buffer[2]);
-	
-	w_buffer[3] = VAL_CC2500_FIFOTHR;
-	SPI_Write(&w_buffer[3], 0x03, 1);
-	w_buffer[4] = 0x00;
-	
-	w_buffer[5] = 0x00;
-	w_buffer[6] = VAL_CC2500_PKTLEN;
-	SPI_Write(&w_buffer[6], 0x06, 1);
-	w_buffer[7] = VAL_CC2500_PKTCTRL1;
-	SPI_Write(&w_buffer[7], 0x07, 1);
-	w_buffer[8] = VAL_CC2500_PKTCTRL0;
-	SPI_Write(&w_buffer[8], 0x08, 1);
-	w_buffer[9] = VAL_CC2500_ADDR;
-	SPI_Write(&w_buffer[9], 0x09, 1);
-	
-	w_buffer[10] = VAL_CC2500_CHANNR;
-	SPI_Write(&w_buffer[10], 0x0A, 1);
-	w_buffer[11] = VAL_CC2500_FSCTRL1;
-	SPI_Write(&w_buffer[11], 0x0B, 1);
-	w_buffer[12] = VAL_CC2500_FSCTRL0;
-	SPI_Write(&w_buffer[12], 0x0C, 1);
-	w_buffer[13] = VAL_CC2500_FREQ2;
-	SPI_Write(&w_buffer[13], 0x0D, 1);
-	w_buffer[14] = VAL_CC2500_FREQ1;
-	SPI_Write(&w_buffer[14], 0x0E, 1);
-	
-	w_buffer[15] = VAL_CC2500_FREQ0;
-	SPI_Write(&w_buffer[15], 0x0F, 1);
-	w_buffer[16] = VAL_CC2500_MDMCFG4;
-	SPI_Write(&w_buffer[16], 0x10, 1);
-	w_buffer[17] = VAL_CC2500_MDMCFG3;
-	SPI_Write(&w_buffer[17], 0x11, 1);
-	w_buffer[18] = VAL_CC2500_MDMCFG2;
-	SPI_Write(&w_buffer[18], 0x12, 1);
-	w_buffer[19] = VAL_CC2500_MDMCFG1;
-	SPI_Write(&w_buffer[19], 0x13, 1);
-	
-	w_buffer[20] = VAL_CC2500_MDMCFG0;
-	SPI_Write(&w_buffer[20], 0x14, 1);
-	w_buffer[21] = VAL_CC2500_DEVIATN;
-	SPI_Write(&w_buffer[21], 0x15, 1);
-	w_buffer[22] = 0x00;
-	w_buffer[23] = VAL_CC2500_MCSM1;
-	SPI_Write(&w_buffer[23], 0x17, 1);
-	w_buffer[24] = VAL_CC2500_MCSM0;
-	SPI_Write(&w_buffer[24], 0x18, 1);
-	
-	w_buffer[25] = VAL_CC2500_FOCCFG;
-	SPI_Write(&w_buffer[25], 0x19, 1);
-	w_buffer[26] = VAL_CC2500_BSCFG;
-	SPI_Write(&w_buffer[26], 0x1A, 1);
-	w_buffer[27] = VAL_CC2500_AGCTRL2;
-	SPI_Write(&w_buffer[27], 0x1B, 1);
-	w_buffer[28] = VAL_CC2500_AGCTRL1;
-	SPI_Write(&w_buffer[28], 0x1C, 1);
-	w_buffer[29] = VAL_CC2500_AGCTRL0;
-	SPI_Write(&w_buffer[29], 0x1D, 1);
-	
-	w_buffer[30] = 0x00;
-	w_buffer[31] = 0x00;
-	w_buffer[32] = 0x00;
-	w_buffer[33] = VAL_CC2500_FREND1;
-	SPI_Write(&w_buffer[33], 0x21, 1);
-	w_buffer[34] = VAL_CC2500_FREND0;
-	SPI_Write(&w_buffer[34], 0x22, 1);
-	
-	w_buffer[35] = VAL_CC2500_FSCAL3;
-	SPI_Write(&w_buffer[35], 0x23, 1);
-	w_buffer[36] = VAL_CC2500_FSCAL2;
-	SPI_Write(&w_buffer[36], 0x24, 1);
-	w_buffer[37] = VAL_CC2500_FSCAL1;
-	SPI_Write(&w_buffer[37], 0x25, 1);
-	w_buffer[38] = VAL_CC2500_FSCAL0;
-	SPI_Write(&w_buffer[38], 0x26, 1);
-	w_buffer[39] = 0x00;
-	
-	w_buffer[40] = 0x00;
-	w_buffer[41] = VAL_CC2500_FSTEST;
-	SPI_Write(&w_buffer[41], 0x29, 1);
-	w_buffer[42] = 0x00;
-	w_buffer[43] = 0x00;
-	w_buffer[44] = VAL_CC2500_TEST2;
-	SPI_Write(&w_buffer[44], 0x2C, 1);
-	
-	w_buffer[45] = VAL_CC2500_TEST1;
-	SPI_Write(&w_buffer[45], 0x2D, 1);
-	w_buffer[46] = VAL_CC2500_TEST0;
-	SPI_Write(&w_buffer[46], 0x2E, 1);
-	
-//	while (addr < 47) {
-//		SPI_Write(&w_buffer[addr], addr, 1);
-//		
-//		addr++;
-//		if (addr == 1 || addr == 22) {
-//			addr++;
-//		} else if (addr == 4 || addr == 39 || addr == 42) {
-//			addr+=2;
-//		} else if (addr == 30) {
-//			addr+=3;
-//		}
-//	}
 
+	w_buffer[0] = VAL_CC2500_IOCFG0;
+	SPI_Write(&w_buffer[0], 0x02, 1);
+	
+	w_buffer[0] = VAL_CC2500_FIFOTHR;
+	SPI_Write(&w_buffer[0], 0x03, 1);
+
+	w_buffer[0] = VAL_CC2500_PKTLEN;
+	SPI_Write(&w_buffer[0], 0x06, 1);
+	w_buffer[0] = VAL_CC2500_PKTCTRL1;
+	SPI_Write(&w_buffer[0], 0x07, 1);
+	w_buffer[0] = VAL_CC2500_PKTCTRL0;
+	SPI_Write(&w_buffer[0], 0x08, 1);
+	w_buffer[0] = VAL_CC2500_ADDR;
+	SPI_Write(&w_buffer[0], 0x09, 1);
+	
+	w_buffer[0] = VAL_CC2500_CHANNR;
+	SPI_Write(&w_buffer[0], 0x0A, 1);
+	w_buffer[0] = VAL_CC2500_FSCTRL1;
+	SPI_Write(&w_buffer[0], 0x0B, 1);
+	w_buffer[0] = VAL_CC2500_FSCTRL0;
+	SPI_Write(&w_buffer[0], 0x0C, 1);
+	w_buffer[0] = VAL_CC2500_FREQ2;
+	SPI_Write(&w_buffer[0], 0x0D, 1);
+	w_buffer[0] = VAL_CC2500_FREQ1;
+	SPI_Write(&w_buffer[0], 0x0E, 1);
+	
+	w_buffer[0] = VAL_CC2500_FREQ0;
+	SPI_Write(&w_buffer[0], 0x0F, 1);
+	w_buffer[0] = VAL_CC2500_MDMCFG4;
+	SPI_Write(&w_buffer[0], 0x10, 1);
+	w_buffer[0] = VAL_CC2500_MDMCFG3;
+	SPI_Write(&w_buffer[0], 0x11, 1);
+	w_buffer[0] = VAL_CC2500_MDMCFG2;
+	SPI_Write(&w_buffer[0], 0x12, 1);
+	w_buffer[0] = VAL_CC2500_MDMCFG1;
+	SPI_Write(&w_buffer[0], 0x13, 1);
+	
+	w_buffer[0] = VAL_CC2500_MDMCFG0;
+	SPI_Write(&w_buffer[0], 0x14, 1);
+	w_buffer[0] = VAL_CC2500_DEVIATN;
+	SPI_Write(&w_buffer[0], 0x15, 1);
+	w_buffer[0] = 0x00;
+	w_buffer[0] = VAL_CC2500_MCSM1;
+	SPI_Write(&w_buffer[0], 0x17, 1);
+	w_buffer[0] = VAL_CC2500_MCSM0;
+	SPI_Write(&w_buffer[0], 0x18, 1);
+	
+	w_buffer[0] = VAL_CC2500_FOCCFG;
+	SPI_Write(&w_buffer[0], 0x19, 1);
+	w_buffer[0] = VAL_CC2500_BSCFG;
+	SPI_Write(&w_buffer[0], 0x1A, 1);
+	w_buffer[0] = VAL_CC2500_AGCTRL2;
+	SPI_Write(&w_buffer[0], 0x1B, 1);
+	w_buffer[0] = VAL_CC2500_AGCTRL1;
+	SPI_Write(&w_buffer[0], 0x1C, 1);
+	w_buffer[0] = VAL_CC2500_AGCTRL0;
+	SPI_Write(&w_buffer[0], 0x1D, 1);
+
+	w_buffer[0] = VAL_CC2500_FREND1;
+	SPI_Write(&w_buffer[0], 0x21, 1);
+	w_buffer[0] = VAL_CC2500_FREND0;
+	SPI_Write(&w_buffer[0], 0x22, 1);
+	
+	w_buffer[0] = VAL_CC2500_FSCAL3;
+	SPI_Write(&w_buffer[0], 0x23, 1);
+	w_buffer[0] = VAL_CC2500_FSCAL2;
+	SPI_Write(&w_buffer[0], 0x24, 1);
+	w_buffer[0] = VAL_CC2500_FSCAL1;
+	SPI_Write(&w_buffer[0], 0x25, 1);
+	w_buffer[0] = VAL_CC2500_FSCAL0;
+	SPI_Write(&w_buffer[0], 0x26, 1);
+
+	w_buffer[0] = VAL_CC2500_FSTEST;
+	SPI_Write(&w_buffer[0], 0x29, 1);
+
+	w_buffer[0] = VAL_CC2500_TEST2;
+	SPI_Write(&w_buffer[0], 0x2C, 1);
+	
+	w_buffer[0] = VAL_CC2500_TEST1;
+	SPI_Write(&w_buffer[0], 0x2D, 1);
+	w_buffer[0] = VAL_CC2500_TEST0;
+	SPI_Write(&w_buffer[0], 0x2E, 1);
 }
 
 
