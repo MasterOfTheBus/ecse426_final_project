@@ -22,19 +22,6 @@ double current_y;
 double x_path[array_length] = {0};
 double y_path[array_length] = {0};
 
-void Blinky_GPIO_Init(void){
-	GPIO_InitTypeDef GPIO_InitStructure;
-	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13| GPIO_Pin_14| GPIO_Pin_15;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-  GPIO_Init(GPIOD, &GPIO_InitStructure);
-	
-}
 
 void set_xy_thread(void const *argument){
 	while(1){
@@ -58,40 +45,7 @@ void set_xy_thread(void const *argument){
 	}
 }
 
-void Blinky(void const *argument){
-	while(1){
-		//GPIO_ToggleBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
-		//printf("hello world\n");
-//		goTo(-3,7);
-//		osDelay(2000);
-//		goTo(3,7);
-//		osDelay(2000);
-//		goTo(0,8);
-//		osDelay(2000);
-//		goTo(0,11);
-//		osDelay(2000);
-//		goTo(-5,6);
-//		osDelay(2000);
-//		goTo(5,6);
-//		osDelay(2000);
-		
-//		for(double x = 6; x < 11; x = x + 0.1){
-//			goTo(0, x);
-//			osDelay(200);
-//			if(x == 10.9) x = 6;
-//		}
-		
-		
-		for(int i=0; i < 50; i++){
-			goTo(x_path[i], y_path[i]);
-			//printf("position : {%f,%f}\n", x_path[i], y_path[i]);
-			osDelay(50);
-	
-		}
-	}
-}
-
-osThreadDef(Blinky, osPriorityNormal, 1, 0);
+osThreadDef(path_thread, osPriorityNormal, 1, 0);
 osThreadDef(set_xy_thread, osPriorityNormal, 1, 0);
 osThreadDef(motor_0_thread, osPriorityNormal, 1, 0);
 osThreadDef(motor_2_thread, osPriorityNormal, 1, 0);
@@ -99,7 +53,7 @@ osThreadDef(motor_1_thread, osPriorityNormal, 1, 0);
 osThreadDef(angle_thread, osPriorityNormal, 1, 0);
 
 // ID for thread
-osThreadId Blinky_thread;
+osThreadId path_thread_id;
 osThreadId set_xy_thread_id;
 osThreadId motor_0_thread_id;
 osThreadId motor_1_thread_id;
@@ -116,7 +70,6 @@ int main (void) {
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
   // initialize peripherals here
-	Blinky_GPIO_Init();
 	motors_init();
 	MEMS_config();
 	MEMS_interrupt_config();
@@ -128,8 +81,7 @@ int main (void) {
 	
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
-	//Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
-	set_xy_thread_id = osThreadCreate(osThread(set_xy_thread), NULL);
+	//path_thread_id = osThreadCreate(osThread(path_thread), NULL);
 	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
 	motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
 	motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);

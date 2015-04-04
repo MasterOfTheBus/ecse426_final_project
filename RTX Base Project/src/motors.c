@@ -103,6 +103,16 @@ void motor_2_thread(void const *argument){
 		set_angle(motor_2_angle, 2);
 	}
 }
+void path_thread(void const *argument){
+	while(1){
+		for(int i=0; i < 50; i++){
+			goTo(x_path[i], y_path[i]);
+			//printf("position : {%f,%f}\n", x_path[i], y_path[i]);
+			osDelay(50);
+	
+		}
+	}
+}
 
 void goTo(double x, double y){
 	
