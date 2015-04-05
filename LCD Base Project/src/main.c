@@ -191,7 +191,7 @@ osThreadId example_1c_thread;
 void wireless_testbench (){
 	// initialize wireless SPI
 	wireless_Init();
-	
+#if 0
 	printf("\n\n");
 
 	uint8_t settings_buffer[1];
@@ -225,7 +225,7 @@ void wireless_testbench (){
 	
 	// --- Strobe ----
 	uint8_t status;
-	status = CC2500_Strobe(SNOP);
+	status = status_state(CC2500_Strobe(SNOP));
 	printf("status: 0x%02x\n\n", status);
 	
 	// ---- Read -----
@@ -250,39 +250,40 @@ void wireless_testbench (){
 	printf("\n\n\n");
 	
 	// -- Strobe again ---
-	status = CC2500_Strobe(SNOP);
+	status = status_state(CC2500_Strobe(SNOP));
 	printf("status: 0x%02x\n", status);
 	
 	wireless_delay(100);
 	
-	status = CC2500_Strobe(SRX);
+	status = status_state(CC2500_Strobe(SRX));
 	printf("status: 0x%02x\n", status);
 	
 	wireless_delay(100);
 	
 	while (status != 0x01) {
-		status = CC2500_Strobe(SNOP);
+		status = status_state(CC2500_Strobe(SNOP));
 		printf("status: 0x%02x\n", status);
 	
 		wireless_delay (100);
 	}
 	
-	status = CC2500_Strobe(SIDLE);
+	status = status_state(CC2500_Strobe(SIDLE));
 	printf("status: 0x%02x\n", status);
 	
 	wireless_delay(100);
 	
-	status = CC2500_Strobe(SNOP);
+	status = status_state(CC2500_Strobe(SNOP));
 	printf("status: 0x%02x\n", status);
-	
+#endif
 	// ---------------- Transmit testing --------------------
+#if 1
 	uint8_t i = 0;
 	while (1){
 		Transmit(&i, 1);
 		i = (i + 1) % 10;
-		delay(1);
+		delay(100);
 	}
-
+#endif
 }
 
 /*

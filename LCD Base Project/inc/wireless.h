@@ -57,6 +57,10 @@
 #define CC2500REG_TX_FIFO		0x3F
 #define CC2500REG_RX_FIFO		0xBF
 
+/* Status Registers */
+#define READ_STATUS 0x02
+#define PKTSTATUS 0x38
+
 static uint8_t SendByte(uint8_t byte);
 void wireless_Init(void);
 uint8_t CC2500_Strobe(uint8_t Strobe);
@@ -65,3 +69,4 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void ReadRecvBuffer(uint8_t *buffer);
 void Transmit(uint8_t *buffer, uint16_t num_bytes);
 void wireless_delay(long num_ticks);
+uint8_t status_state(uint8_t status);

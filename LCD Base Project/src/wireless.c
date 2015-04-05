@@ -1,6 +1,10 @@
 #include "wireless.h"
 #include "cc2500_settings.h"
 
+uint8_t status_state(uint8_t status) {
+	return ((status & 0x70) >> 4);
+}
+
 __IO uint32_t Timeout = FLAG_TIMEOUT;
 
 int TIMEOUT_UserCallback(void) {
@@ -20,7 +24,7 @@ uint8_t CC2500_Strobe(uint8_t Strobe){
 	SPI_I2S_SendData(CC2500_SPI, Strobe);												// condition satisfied --> send command strobe
 
 	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_RXNE) == RESET);		// check flag for being busy to be SET
-	CC2500_state = (SPI_I2S_ReceiveData(CC2500_SPI) & 0x70) >> 4;											// set status to most recent received data on SPI1
+	CC2500_state = (SPI_I2S_ReceiveData(CC2500_SPI));// & 0x70) >> 4;											// set status to most recent received data on SPI1
 
 	// Set chip select High at the end of the transmission
 	CC2500_CS_HIGH();   
@@ -105,10 +109,10 @@ static void LowLevel_Init(void){
 	//while(!GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN));
 	
 	// Set to IDLE state
-	uint8_t state = CC2500_Strobe(SIDLE);
+	uint8_t state = status_state(CC2500_Strobe(SIDLE));
 	
 	while (state != 0x00) {
-		state = CC2500_Strobe(SNOP);
+		state = status_state(CC2500_Strobe(SNOP));
 	}
 	
 	CC2500_CS_HIGH();
@@ -205,38 +209,73 @@ void Transmit(uint8_t *buffer, uint16_t num_bytes) {
 	CC2500_CS_LOW();
 	
 	uint8_t current_status;
-	current_status = CC2500_Strobe(SIDLE);								
+	current_status = status_state(CC2500_Strobe(SIDLE));								
 	
 	while (current_status != IDLE){
-		current_status = CC2500_Strobe(SNOP);
+		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 	
-	current_status = CC2500_Strobe(STX);
+	// change config for GDOx_CFG to indicate packet sent
+	uint8_t config_GDO = 0x06;
+	SPI_Write(&config_GDO, 0x00, 0x01);
 	
-	while (current_status != TX){
-		current_status = CC2500_Strobe(SNOP);
-	}
+//	current_status = status_state(CC2500_Strobe(STX));
+//	
+//	while (current_status != TX){
+//		current_status = status_state(CC2500_Strobe(SNOP));
+//	}
 
-//	uint8_t NumBytesinFIFO = 0x08;
-//	SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
-	//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
+	uint8_t NumBytesinFIFO;
+	SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
+	printf ("#bytes befoe: 0x%02x\n", NumBytesinFIFO);
+	uint8_t GDO2; // the GDOx_CFG value
 	for (; num_bytes > 0; num_bytes--) {
 		// check for overflow
-		uint8_t GDO2;
 		SPI_Read(&GDO2, 0x00, 1); // check for filling past the threshold
 		if ((GDO2 & 0x1F) != 0x02) {
 			printf("transmitting: %i\n", buffer[num_bytes-1]);
 			SPI_Write(&buffer[num_bytes-1], CC2500REG_TX_FIFO, 0x01);
+			
+			SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
+			printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
+			
+//			current_status = CC2500_Strobe(SNOP);
+//			printf("bytes avail: %i\n", current_status & 0x0F);
 		} else {
 			num_bytes++; // make sure we don't advance the loop
 		}
 		wireless_delay(100);
 	}
 	
-	current_status = CC2500_Strobe(SIDLE);
-	while (current_status != IDLE) {
-		current_status = CC2500_Strobe(SNOP);
+//	SPI_Read(&GDO2, 0x00, 1); // check that packet has been sent?
+//	//printf("GDO2: 0x%02x\n", GDO2); // geting 0x29 CHiP_RDYn, want 0x06?
+//	// wait for gdo2 to go to 0x06 and that it is asserted?
+//	// does the register value have to change?
+//	while ((GDO2 & 0x1F) != 0x06) {
+//		printf("GDO2: 0x%02x\n", GDO2);
+//		SPI_Read(&GDO2, 0x00, 1);
+//	}
+	
+	current_status = status_state(CC2500_Strobe(STX));
+	
+	while (current_status != TX){
+		current_status = status_state(CC2500_Strobe(SNOP));
 	}
+	
+	uint8_t pktstatus;
+	SPI_Read(&pktstatus, PKTSTATUS, READ_STATUS);
+	// wait until end of packet
+	while((pktstatus & 0x04) == 0x04) {
+		SPI_Read(&pktstatus, PKTSTATUS, READ_STATUS);
+	}
+	
+	current_status = status_state(CC2500_Strobe(SIDLE));
+	while (current_status != IDLE) {
+		current_status = status_state(CC2500_Strobe(SNOP));
+	}
+	
+	config_GDO = 0x29; // conigure back to CHIP_RDYn
+	SPI_Write(&config_GDO, 0x00, 0x01);
 	
 	CC2500_CS_HIGH();
 }
@@ -247,16 +286,16 @@ void ReadRecvBuffer(uint8_t *buffer) {
 	
 	uint8_t current_status; 
 	uint8_t data_received; 
-	current_status = CC2500_Strobe(SIDLE);								
+	current_status = status_state(CC2500_Strobe(SIDLE));								
 	
 	while (current_status != 0x00){
-		current_status = CC2500_Strobe(SNOP);
+		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 	
-	current_status = CC2500_Strobe(SRX);
+	current_status = status_state(CC2500_Strobe(SRX));
 	
 	while (current_status != 0x01){
-		current_status = CC2500_Strobe(SNOP);
+		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 
 	while (current_status == 0x01){
@@ -268,7 +307,7 @@ void ReadRecvBuffer(uint8_t *buffer) {
 			printf ("data: 0x%02x\n", data_received);
 		}
 		wireless_delay(100);
-		current_status = CC2500_Strobe(SNOP);
+		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 	
 	
