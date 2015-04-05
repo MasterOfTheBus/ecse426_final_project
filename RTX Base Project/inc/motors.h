@@ -52,13 +52,7 @@ extern double motor_1_angle;
 extern double motor_2_angle;
 
 void motors_init();
-void enable_motor(int motor);
-void disable_motor(int motor);
-void set_angle(int angle, int motor);
-
-void motor_0_thread(void const *argument);
-void motor_1_thread(void const *argument);
-void motor_2_thread(void const *argument);
+void set_angles();
 void path_thread(void const *argument);
 
 void goTo(double x, double y);

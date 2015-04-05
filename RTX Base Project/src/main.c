@@ -47,17 +47,11 @@ void set_xy_thread(void const *argument){
 
 osThreadDef(path_thread, osPriorityNormal, 1, 0);
 osThreadDef(set_xy_thread, osPriorityNormal, 1, 0);
-osThreadDef(motor_0_thread, osPriorityNormal, 1, 0);
-osThreadDef(motor_2_thread, osPriorityNormal, 1, 0);
-osThreadDef(motor_1_thread, osPriorityNormal, 1, 0);
 osThreadDef(angle_thread, osPriorityNormal, 1, 0);
 
 // ID for thread
 osThreadId path_thread_id;
 osThreadId set_xy_thread_id;
-osThreadId motor_0_thread_id;
-osThreadId motor_1_thread_id;
-osThreadId motor_2_thread_id;
 osThreadId angle_thread_id;
 
 
@@ -65,7 +59,7 @@ osThreadId angle_thread_id;
  * main: initialize and start the system
  */
 int main (void) {
-	drawTriangle(0.0,7.0);
+	drawRectangle(0.0,7.0);
 
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
@@ -74,34 +68,27 @@ int main (void) {
 	MEMS_config();
 	MEMS_interrupt_config();
 	
+//	while(1){
+//		u8 ReadValue;
+//		ReadValue = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6);
+//		printf("%d\n", ReadValue);
+//	}
+	
 	// angle from 0 to 180
-	//motor_0_angle = 45;
-	//motor_1_angle = 90;
+	//motor_0_angle = 90;
+	//motor_1_angle = 120;
 	//motor_2_angle = 90;
+	//set_angles();
 	
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
-	//path_thread_id = osThreadCreate(osThread(path_thread), NULL);
-	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
-	motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
-	motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
+	path_thread_id = osThreadCreate(osThread(path_thread), NULL);
 	
-	angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
+	//angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
 	
 	
 	osKernelStart ();                         // start thread execution 
 	
-}
-
-void TIM3_IRQHandler(void)
-{
-	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
-	{
-		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-		osSignalSet(motor_0_thread_id, 0x01);
-		osSignalSet(motor_1_thread_id, 0x01);
-		osSignalSet(motor_2_thread_id, 0x01);
-	}
 }
 
 
