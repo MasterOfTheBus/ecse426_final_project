@@ -218,7 +218,7 @@ int main (void) {
 	********************************************************/
 	
 	//example_1a_thread = osThreadCreate(osThread(example_1a), NULL);
-	example_1b_thread = osThreadCreate(osThread(example_1b), NULL);
+	//example_1b_thread = osThreadCreate(osThread(example_1b), NULL);
 	//example_1c_thread = osThreadCreate(osThread(example_1c), NULL);
 	
 	osKernelStart ();                         // start thread execution 
