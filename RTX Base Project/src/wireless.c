@@ -210,57 +210,32 @@ void ReadRecvBuffer(uint8_t *buffer) {
 	CC2500_CS_LOW();
 	
 	uint8_t current_status; 
-	uint8_t data_received; 
-	current_status = CC2500_Strobe(SIDLE);								
+	//uint8_t data_received; 
+	current_status = (CC2500_Strobe(SIDLE));								
 	
 	while (current_status != 0x00){
-		current_status = CC2500_Strobe(SNOP);
+		current_status = (CC2500_Strobe(SNOP));
 	}
 	
-	current_status = CC2500_Strobe(SRX);
+	current_status = (CC2500_Strobe(SRX));
 	
 	while (current_status != 0x01){
-		current_status = CC2500_Strobe(SNOP);
+		current_status = (CC2500_Strobe(SNOP));
 	}
 
+	uint8_t i = 0;
 	while (current_status == 0x01){
 		uint8_t NumBytesinFIFO = 0x08;
 		SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
 			//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
-			SPI_Read(&data_received, CC2500REG_RX_FIFO, 0x01);
-			printf ("data: 0x%02x\n", data_received);
+			SPI_Read(&buffer[i], CC2500REG_RX_FIFO, 0x01);
+			printf ("data: 0x%02x\n", buffer[i]);
 		}
 		delay(100);
-		current_status = CC2500_Strobe(SNOP);
+		current_status = (CC2500_Strobe(SNOP));
+		i++;
 	}
-	
-	
-	
-	
-//	CC2500_CS_LOW();
-//	
-//	CC2500_Strobe(SRX);
-//	
-//	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
-//	
-//	uint8_t bytes_avail = CC2500_Strobe(SNOP) & 0x0F;
-//	
-//	if (bytes_avail > 0) {
-//		if (bytes_avail > 1) {
-//			SPI_Read(buffer, 0xBF, bytes_avail);
-//			printf("received: %i\n", buffer[0]);
-//		} else {
-//			SPI_Read(buffer, 0xFF, bytes_avail);
-//			printf("received: %i\n", buffer[0]);
-//		}
-//	}
-//	
-//	CC2500_Strobe(SIDLE);
-//	
-//	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
-//	
-//	CC2500_Strobe(SFRX);
 		
 	CC2500_CS_HIGH();
 }

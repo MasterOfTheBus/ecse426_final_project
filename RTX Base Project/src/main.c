@@ -37,7 +37,8 @@ osThreadId motor_2_thread_id;
 void wireless_testbench (){
 	// initialize wireless SPI
 	wireless_Init();
-	
+	uint8_t r_buffer[1];
+#if 0
 	printf("\n\n");
 
 	uint8_t settings_buffer[1];
@@ -84,7 +85,7 @@ void wireless_testbench (){
 	// --- Write ---
 	uint8_t w_buffer[] = {8};
 	printf("value writing: %i\n", w_buffer[0]);
-	uint8_t r_buffer[1];
+
 	address = 0x06;
 	bytes = 0x01;
 	
@@ -120,13 +121,14 @@ void wireless_testbench (){
 	
 	status = CC2500_Strobe(SNOP);
 	printf("status: 0x%02x\n", status);
-	
+#endif
 	// ---------------- Receive testing --------------------
+#if 1
 	while (1){
 		ReadRecvBuffer(r_buffer);
 		delay(100);
 	}
-
+#endif
 }
 
 /*
