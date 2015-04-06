@@ -424,6 +424,21 @@
               <FileType>1</FileType>
               <FilePath>.\src\wireless.c</FilePath>
             </File>
+            <File>
+              <FileName>UI.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\UI.c</FilePath>
+            </File>
+            <File>
+              <FileName>MEMS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\MEMS.c</FilePath>
+            </File>
+            <File>
+              <FileName>KalmanFilter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\KalmanFilter.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

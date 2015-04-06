@@ -9,6 +9,7 @@
 #include "motors.h"
 #include "wireless.h"
 #include "MEMS.h"
+#include "UI.h"
 #include <stdio.h>
 
 double pitch;
@@ -21,6 +22,12 @@ double current_x;
 double current_y;
 double x_path[array_length] = {0};
 double y_path[array_length] = {0};
+
+
+int direction;
+int mode;
+int shape;
+int send;
 
 
 void set_xy_thread(void const *argument){
