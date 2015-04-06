@@ -7,7 +7,7 @@
 #include "stm32f4xx_tim.h"
 
 #define STAR 1
-#define POUND 2
+#define TicTacToe 2
 
 #define SQUARE 1
 #define RECTANGLE 2

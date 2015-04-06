@@ -40,6 +40,8 @@
 #define triangle_side 3
 #define segment_length 2
 #define array_length 50
+#define up 1
+#define down 0
 
 extern double current_x;
 extern double current_y;
@@ -51,9 +53,13 @@ extern double motor_0_angle;
 extern double motor_1_angle;
 extern double motor_2_angle;
 
+
+
 void motors_init();
 void set_angles();
 void path_thread(void const *argument);
+
+void upDown();
 
 void goTo(double x, double y);
 void draw_LroR(double x, double y);
@@ -61,7 +67,7 @@ void drawSquare(double x, double y);
 void drawRectangle(double x, double y);
 void drawTriangle(double x, double y);
 void drawSegment(double x, double y, double angle);
-
+void drawBoard_thread(void const *argument);
 #endif
 
 

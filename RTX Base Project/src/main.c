@@ -29,6 +29,13 @@ int mode;
 int shape;
 int send;
 
+// ID for thread
+osThreadId path_thread_id;
+osThreadId set_xy_thread_id;
+osThreadId angle_thread_id;
+osThreadId drawBoard_thread_id;
+
+osThreadId keypad_thread_id;
 
 void set_xy_thread(void const *argument){
 	while(1){
@@ -52,28 +59,63 @@ void set_xy_thread(void const *argument){
 	}
 }
 
+void keypad_thread(void const *argument){
+	while(1){
+		Keypad_read();
+		if (send == 1){
+			printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
+			if(mode == TicTacToe){
+				if (shape == BOARD) osSignalSet(drawBoard_thread_id, 0x01);
+				
+				
+			
+			}else{
+				
+				if (shape==1) drawSquare(current_x,current_y);
+				if (shape==2) drawRectangle(current_x,current_y);
+				if (shape==3) drawTriangle(current_x,current_y);
+				
+				if (shape ==0){
+					drawSegment(current_x, current_y, direction);
+				}
+				
+			osSignalSet (path_thread_id, 0x01);
+			}
+			
+			
+		}
+		osDelay(50);
+	}
+}
+
+void lift_thread(void const *argument){
+
+
+}
+
 osThreadDef(path_thread, osPriorityNormal, 1, 0);
 osThreadDef(set_xy_thread, osPriorityNormal, 1, 0);
 osThreadDef(angle_thread, osPriorityNormal, 1, 0);
+osThreadDef(drawBoard_thread, osPriorityNormal, 1, 0);
 
-// ID for thread
-osThreadId path_thread_id;
-osThreadId set_xy_thread_id;
-osThreadId angle_thread_id;
+osThreadDef(keypad_thread, osPriorityNormal, 1, 0);
 
 
 /*
  * main: initialize and start the system
  */
 int main (void) {
-	drawRectangle(0.0,7.0);
+	//
 
+	
+	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
   // initialize peripherals here
 	motors_init();
 	MEMS_config();
 	MEMS_interrupt_config();
+	upDown(up);
 	
 //	while(1){
 //		u8 ReadValue;
@@ -90,8 +132,10 @@ int main (void) {
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
 	path_thread_id = osThreadCreate(osThread(path_thread), NULL);
-	
-	//angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
+	keypad_thread_id = osThreadCreate(osThread(keypad_thread), NULL);
+	set_xy_thread_id = osThreadCreate(osThread(set_xy_thread), NULL);
+	angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
+	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
 	
 	
 	osKernelStart ();                         // start thread execution 

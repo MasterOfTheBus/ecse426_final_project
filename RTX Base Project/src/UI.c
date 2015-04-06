@@ -217,9 +217,10 @@ void Keypad_read(){
 	if (result != lastResult && result != 99/*&& count<5*/){
 		if (result == 21) mode = STAR;
 		if (result == 22) {
-			mode = POUND;
+			mode = TicTacToe;
 			shape = BOARD;
 			send = 1;
+			printf("drawing board\n");
 		}
 			
 		if (mode == STAR){
@@ -227,17 +228,22 @@ void Keypad_read(){
 			// Shapes
 			if (result == 10) {
 				shape = SQUARE;
-				send = 1;
+				printf("square");
+				//send = 1;
+				direction = RESET;
 			}
 			else if (result == 11){
 				shape = RECTANGLE;
-				send = 1;
+				//send = 1;
+				direction = RESET;
 			}
 			else if (result == 12){
 				shape = TRIANGLE;
-				send = 1;
+				//send = 1;
+				direction = RESET;
 			}
-			else {
+			else if (result != 13){
+				printf("result: %i", result);
 				shape = 0;
 				// Straight lines
 				if (result == 6) userInput = 0;
@@ -297,18 +303,29 @@ void Keypad_read(){
 						angleCount = 0;
 					}
 				}
-				// send result
-				if (result == 5) {
-					direction = RESET;
-					send = 1;
-				}else if (result == 13) {
-					direction = userInput;
-					send = 1;
-				}
+				
 			}
-		}else if (mode == POUND){
-			direction = result;
-			send = 1;
+			// send result
+			if (result == 5) {
+				direction = RESET;
+				shape = 0;
+				send = 1;
+				angleCount =0;
+			}else if (result == 13) {
+				direction = userInput;
+				send = 1;
+				angleCount =0;
+				printf("shape: %i\n", shape);
+			}
+			
+		}else if (mode == TicTacToe){
+			
+			printf("I am here...\n");
+			if (result < 10){
+				shape = 0; //
+				direction = result;
+				send = 1;
+			}
 		}
 		
 		

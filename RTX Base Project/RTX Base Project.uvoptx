@@ -227,6 +227,12 @@
       </DebugFlag>
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
+      <SystemViewers>
+        <Entry>
+          <Name>OS Support\Event Viewer</Name>
+          <WinId>35905</WinId>
+        </Entry>
+      </SystemViewers>
     </TargetOption>
   </Target>
 
@@ -244,8 +250,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2</TopLine>
-      <CurrentLine>26</CurrentLine>
+      <TopLine>98</TopLine>
+      <CurrentLine>107</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -274,10 +280,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>13</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1</TopLine>
-      <CurrentLine>124</CurrentLine>
+      <TopLine>277</TopLine>
+      <CurrentLine>307</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\motors.c</PathWithFileName>
       <FilenameWithoutPath>motors.c</FilenameWithoutPath>
@@ -306,10 +312,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>21</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>278</TopLine>
-      <CurrentLine>312</CurrentLine>
+      <TopLine>305</TopLine>
+      <CurrentLine>325</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\src\UI.c</PathWithFileName>
       <FilenameWithoutPath>UI.c</FilenameWithoutPath>
@@ -436,7 +442,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>212</TopLine>
+      <TopLine>218</TopLine>
       <CurrentLine>221</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>RTE\CMSIS\RTX_Conf_CM.c</PathWithFileName>
@@ -972,7 +978,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>176</TopLine>
+      <TopLine>174</TopLine>
       <CurrentLine>182</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>RTE\Device\STM32F407VG\startup_stm32f40_41xxx.s</PathWithFileName>

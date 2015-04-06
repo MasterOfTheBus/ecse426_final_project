@@ -59,7 +59,7 @@ void set_angles(){
 	int duty_cycle;
 	
 	duty_cycle = (180-motor_0_angle)*2+150;
-	printf("%d\n", duty_cycle);
+	//printf("%d\n", duty_cycle);
 	TIM_OCStruct.TIM_Pulse = duty_cycle;
 	TIM_OC1Init(TIM3, &TIM_OCStruct);
 
@@ -75,14 +75,27 @@ void set_angles(){
 
 void path_thread(void const *argument){
 	while(1){
-		for(int i=0; i < 50; i++){
+		osSignalWait (0x01, osWaitForever);
+		goTo(x_path[0], y_path[0]);
+		upDown(down);
+		osDelay(500);
+		for(int i=1; i < 50; i++){
 			goTo(x_path[i], y_path[i]);
 			//printf("position : {%f,%f}\n", x_path[i], y_path[i]);
 			set_angles();
 			osDelay(50);
-	
+		if(x_path[i]==x_path[i-1]&&y_path[i]==y_path[i-1]) break;
 		}
+		upDown(up);
 	}
+}
+
+void upDown(int in){
+	
+	if (in == up) motor_2_angle=120;
+	if (in == down) motor_2_angle=180;
+	set_angles();
+
 }
 
 void goTo(double x, double y){
@@ -124,7 +137,7 @@ void goTo(double x, double y){
 
 	current_x = x;
 	current_y = y;
-	
+	set_angles();
 //	printf("position : {%f,%f}\n", x, y);
 //	printf("beta l is: %f\n",  beta_l);
 //	printf("beta r is: %f\n", beta_r);
@@ -249,5 +262,53 @@ void drawSegment(double x, double y, double angle){
 		y_path[i] = y_path[i-1];
 	}
 	
+}
+
+void drawBoard_thread(void const *argument){
+	while(1){
+		osSignalWait (0x01, osWaitForever);
+		// draw first line
+		upDown(up);
+		osDelay(500);
+		goTo(-5, 10);
+		osDelay(500);
+		upDown(down);
+		for(float i=0; i<=6; i=i+0.1){
+			goTo(-5+i, 10);
+			printf("print something...\n");
+			osDelay(50);
+		}
+		upDown(up);
+		osDelay(500);
+		goTo(1, 8);
+		osDelay(500);
+		upDown(down);
+		osDelay(500);
+		for(float i=0; i<=6; i=i+0.1){
+			goTo(1-i, 8);
+			osDelay(50);
+		}
+		upDown(up);
+		osDelay(500);
+		goTo(-3, 6);
+		osDelay(500);
+		upDown(down);
+		osDelay(500);
+		for(float i=0; i<=6; i=i+0.1){
+			goTo(-3, 6+i);
+			osDelay(50);
+		}
+		upDown(up);
+		osDelay(500);
+		goTo(-1, 12);
+		osDelay(500);
+		upDown(down);
+		osDelay(500);
+		for(float i=0; i<=6; i=i+0.1){
+			goTo(-1, 12-i);
+			osDelay(50);
+		}
+		upDown(up);
+	}
 }
 
