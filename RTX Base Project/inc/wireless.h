@@ -45,6 +45,9 @@
 #define CC2500_CS_LOW()       GPIO_ResetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
 #define CC2500_CS_HIGH()      GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
 
+#define IDLE 0x00
+#define RX 0x01
+#define TX 0x02
 
 /*	Buffer status registers	*/
 #define CC2500REG_TXBYTES		(0x3A|0xFA)
@@ -60,5 +63,6 @@ uint8_t CC2500_Strobe(uint8_t Strobe);
 void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void ReadRecvBuffer(uint8_t *buffer);
-void Transmit(uint8_t *buffer);
+void Transmit(uint8_t *buffer, uint16_t num_bytes);
 void delay(long num_ticks);
+uint8_t status_state(uint8_t status);

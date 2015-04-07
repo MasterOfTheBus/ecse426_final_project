@@ -15,7 +15,7 @@
 
 #define VAL_CC2500_ADDR 		0x00	
 
-#define VAL_CC2500_CHANNR 	0x30 // 0 for testing, 0x30 for 48
+#define VAL_CC2500_CHANNR 	0x00 // 0 for testing, 0x30 for 48
 
 #define VAL_CC2500_FSCTRL1 	0x0C	
 #define VAL_CC2500_FSCTRL0 	0x00	
@@ -34,7 +34,7 @@
 #define VAL_CC2500_DEVIATN 	0x00	
 
 
-#define VAL_CC2500_MCSM1 		0x02	
+#define VAL_CC2500_MCSM1 		0x02	// switch to idle when received; stay in tx when sent
 #define VAL_CC2500_MCSM0 		0x18	
 
 #define VAL_CC2500_FOCCFG 	0x1D	

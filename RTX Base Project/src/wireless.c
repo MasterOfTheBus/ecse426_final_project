@@ -3,6 +3,10 @@
 
 __IO uint32_t Timeout = FLAG_TIMEOUT;
 
+uint8_t status_state(uint8_t status) {
+	return ((status & 0x70) >> 4);
+}
+
 int TIMEOUT_UserCallback(void) {
 	while (1);
 }
@@ -20,7 +24,7 @@ uint8_t CC2500_Strobe(uint8_t Strobe){
 	SPI_I2S_SendData(CC2500_SPI, Strobe);												// condition satisfied --> send command strobe
 
 	while (SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_RXNE) == RESET);		// check flag for being busy to be SET
-	CC2500_state = (SPI_I2S_ReceiveData(CC2500_SPI) & 0x70) >> 4;											// set status to most recent received data on SPI1
+	CC2500_state = (SPI_I2S_ReceiveData(CC2500_SPI));											// set status to most recent received data on SPI1
 
 	// Set chip select High at the end of the transmission
 	CC2500_CS_HIGH();   
@@ -105,10 +109,10 @@ static void LowLevel_Init(void){
 	//while(!GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN));
 	
 	// Set to IDLE state
-	uint8_t state = CC2500_Strobe(SIDLE);
+	uint8_t state = status_state(CC2500_Strobe(SIDLE));
 	
 	while (state != 0x00) {
-		state = CC2500_Strobe(SNOP);
+		state = status_state(CC2500_Strobe(SNOP));
 	}
 	
 	CC2500_CS_HIGH();
@@ -201,8 +205,23 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	CC2500_CS_HIGH();
 }
 
-void Transmit(uint8_t *buffer) {
+void Transmit(uint8_t *buffer, uint16_t num_bytes) {
+	CC2500_CS_LOW();
 	
+	status_state(CC2500_Strobe(SIDLE));								
+	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
+	
+	uint8_t GDO2;
+	SPI_Read(&GDO2, 0x00, 1); // check for filling past the threshold
+	if ((GDO2 & 0x1F) != 0x02) {
+		SPI_Write(buffer, CC2500REG_TX_FIFO, 0x01);
+	}
+	
+	status_state(CC2500_Strobe(STX));
+	while (status_state(CC2500_Strobe(SNOP)) != TX);
+	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
+	
+	CC2500_CS_HIGH();
 }
 
 void ReadRecvBuffer(uint8_t *buffer) {
@@ -211,29 +230,29 @@ void ReadRecvBuffer(uint8_t *buffer) {
 	
 	uint8_t current_status; 
 	//uint8_t data_received; 
-	current_status = (CC2500_Strobe(SIDLE));								
+	current_status = (status_state(CC2500_Strobe(SIDLE)));								
 	
-	while (current_status != 0x00){
-		current_status = (CC2500_Strobe(SNOP));
+	while (current_status != IDLE){
+		current_status = (status_state(CC2500_Strobe(SNOP)));
 	}
 	
-	current_status = (CC2500_Strobe(SRX));
+	current_status = (status_state(CC2500_Strobe(SRX)));
 	
-	while (current_status != 0x01){
-		current_status = (CC2500_Strobe(SNOP));
+	while (current_status != RX){
+		current_status = (status_state(CC2500_Strobe(SNOP)));
 	}
 
 	uint8_t i = 0;
 	while (current_status == 0x01){
-		uint8_t NumBytesinFIFO = 0x08;
+		uint8_t NumBytesinFIFO;
 		SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
 			//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
 			SPI_Read(&buffer[i], CC2500REG_RX_FIFO, 0x01);
 			printf ("data: 0x%02x\n", buffer[i]);
 		}
-		delay(100);
-		current_status = (CC2500_Strobe(SNOP));
+//		delay(100);
+		current_status = (status_state(CC2500_Strobe(SNOP)));
 		i++;
 	}
 		

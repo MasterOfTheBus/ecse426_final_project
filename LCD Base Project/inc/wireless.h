@@ -67,6 +67,6 @@ uint8_t CC2500_Strobe(uint8_t Strobe);
 void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void ReadRecvBuffer(uint8_t *buffer);
-void Transmit(uint8_t *buffer, uint16_t num_bytes);
+uint8_t Transmit(uint8_t *buffer, uint16_t num_bytes);
 void wireless_delay(long num_ticks);
 uint8_t status_state(uint8_t status);

@@ -205,23 +205,27 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	CC2500_CS_HIGH();
 }
 
-void Transmit(uint8_t *buffer, uint16_t num_bytes) {
+uint8_t Transmit(uint8_t *buffer, uint16_t num_bytes) {
 	CC2500_CS_LOW();
 	
 	status_state(CC2500_Strobe(SIDLE));								
 	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
 	
-	uint8_t GDO2;
-	SPI_Read(&GDO2, 0x00, 1); // check for filling past the threshold
-	if ((GDO2 & 0x1F) != 0x02) {
-		SPI_Write(buffer, CC2500REG_TX_FIFO, 0x01);
+	uint8_t NumBytesinFIFO;
+	SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
+	if (NumBytesinFIFO >= num_bytes) {
+		SPI_Write(buffer, CC2500REG_TX_FIFO, num_bytes);
+	} else {
+		return 0;
 	}
-	
+
 	status_state(CC2500_Strobe(STX));
 	while (status_state(CC2500_Strobe(SNOP)) != TX);
 	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
 	
 	CC2500_CS_HIGH();
+	
+	return 1;
 }
 
 void ReadRecvBuffer(uint8_t *buffer) {
@@ -244,7 +248,7 @@ void ReadRecvBuffer(uint8_t *buffer) {
 
 	uint8_t i = 0;
 	while (current_status == 0x01){
-		uint8_t NumBytesinFIFO = 0x08;
+		uint8_t NumBytesinFIFO;
 		SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
 			//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);

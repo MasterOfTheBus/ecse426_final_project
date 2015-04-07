@@ -14,15 +14,15 @@ int motor_0_angle;
 int motor_1_angle;
 int motor_2_angle;
 
-void Blinky(void const *argument){
-	while(1){
-		GPIO_ToggleBits(GPIOD, GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
-		//printf("hello world\n");
-		osDelay(250);
+void ReceiveData(void const *argument){
+	uint8_t r_buffer;
+	while (1){
+		ReadRecvBuffer(&r_buffer);
+		osDelay(100);
 	}
 }
 
-osThreadDef(Blinky, osPriorityNormal, 1, 0);
+osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
 
 osThreadDef(motor_0_thread, osPriorityNormal, 1, 0);
 osThreadDef(motor_2_thread, osPriorityNormal, 1, 0);
@@ -137,29 +137,29 @@ void wireless_testbench (){
 int main (void) {
 	
 	wireless_testbench ();
-//	
+	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
-//	
-//	// ID for thread
-//	osThreadId	Blinky_thread;
-//	
-//  // initialize peripherals here
-//	Blinky_GPIO_Init();
+	
+	// ID for thread
+	//osThreadId	RecvData_thread;
+	
+  // initialize peripherals here
+	//wireless_Init();
 //	motors_init();
-//	
-//	// angle from 0 to 180
+	
+	// angle from 0 to 180
 //	motor_0_angle = 45;
-//	//motor_1_angle = 90;
-//	//motor_2_angle = 45;
-//	
-//  // create 'thread' functions that start executing,
-//  // example: tid_name = osThreadCreate (osThread(name), NULL);
-//	Blinky_thread = osThreadCreate(osThread(Blinky), NULL);
+	//motor_1_angle = 90;
+	//motor_2_angle = 45;
+	
+  // create 'thread' functions that start executing,
+  // example: tid_name = osThreadCreate (osThread(name), NULL);
+	//RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
 //	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
-//	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
-//	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
-//	
-//	
+	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
+	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
+	
+	
 	osKernelStart ();                         // start thread execution 
 	
 }
