@@ -17,7 +17,7 @@ int motor_2_angle;
 void ReceiveData(void const *argument){
 	uint8_t r_buffer;
 	while (1){
-		ReadRecvBuffer(&r_buffer);
+		CC2500_ReadRecvBuffer(&r_buffer);
 		osDelay(100);
 	}
 }
@@ -36,7 +36,7 @@ osThreadId motor_2_thread_id;
 // To test wireless module and SPI
 void wireless_testbench (){
 	// initialize wireless SPI
-	wireless_Init();
+	CC2500_Init();
 	uint8_t r_buffer[1];
 #if 0
 	printf("\n\n");
@@ -125,7 +125,7 @@ void wireless_testbench (){
 	// ---------------- Receive testing --------------------
 #if 1
 	while (1){
-		ReadRecvBuffer(r_buffer);
+		CC2500_ReadRecvBuffer(r_buffer);
 		delay(100);
 	}
 #endif

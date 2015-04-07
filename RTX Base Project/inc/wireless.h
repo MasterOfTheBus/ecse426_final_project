@@ -2,12 +2,11 @@
 #include "stm32f4xx_conf.h"
 #include <stdio.h>
 
-/* Generalize the file for transmitter and receiver on different boards */
-
+// generalize the file for transmitter and receiver on different boards
 #define CC2500_SPI							SPI2
 #define CC2500_SPI_CLK					RCC_APB1Periph_SPI2
 
-/* Define the pins and ports for the configurations */
+// Define the pins and ports for the configurations
 #define CC2500_SPI_GPIO_CLK 					RCC_AHB1Periph_GPIOB
 #define CC2500_SPI_CS_GPIO_CLK				RCC_AHB1Periph_GPIOB
 #define CC2500_SPI_GPIO_PORT					GPIOB
@@ -23,7 +22,7 @@
 #define CC2500_SPI_MISO_SOURCE        GPIO_PinSource14
 #define CC2500_SPI_MOSI_SOURCE        GPIO_PinSource15
 
-
+// strobe commands
 #define SRES 0x30
 #define SFSTXON 0x31
 #define SXOFF 0x32
@@ -36,33 +35,32 @@
 #define SFRX 0x3A
 #define SFTX 0x3B
 #define SWORRST 0x3C
-#define SNOP 0x3D        
+#define SNOP 0x3D  
 
-/* Define macros for general use */
+// states of wireless transmitter
+#define IDLE_STATE 	0x00
+#define RX_STATE		0x01
+#define TX_STATE		0x02
 
+// general usage
 #define FLAG_TIMEOUT ((uint32_t)0x1000)
+#define CC2500_CS_LOW() 	GPIO_ResetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
+#define CC2500_CS_HIGH() 	GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
 
-#define CC2500_CS_LOW()       GPIO_ResetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
-#define CC2500_CS_HIGH()      GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN)
-
-#define IDLE 0x00
-#define RX 0x01
-#define TX 0x02
-
-/*	Buffer status registers	*/
+// registers for number of values in FIFO
 #define CC2500REG_TXBYTES		(0x3A|0xFA)
 #define CC2500REG_RXBYTES		(0x3B|0xFB)
 
-/*	Burst access to FIFOs	*/
+// FIFO registers
 #define CC2500REG_TX_FIFO		0x3F
 #define CC2500REG_RX_FIFO		0xBF
 
-static uint8_t SendByte(uint8_t byte);
-void wireless_Init(void);
+static uint8_t CC2500_SendByte(uint8_t byte);
+void CC2500_Init(void);
 uint8_t CC2500_Strobe(uint8_t Strobe);
-void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
-void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
-void ReadRecvBuffer(uint8_t *buffer);
-void Transmit(uint8_t *buffer, uint16_t num_bytes);
+void CC2500_SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
+void CC2500_SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
+void CC2500_ReadRecvBuffer(uint8_t *buffer);
+void CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes);
 void delay(long num_ticks);
-uint8_t status_state(uint8_t status);
+
