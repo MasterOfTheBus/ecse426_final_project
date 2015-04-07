@@ -39,10 +39,10 @@ osThreadId keypad_thread_id;
 
 void set_xy_thread(void const *argument){
 	while(1){
-		printf("roll: %f\n", roll);
-		printf("pitch: %f\n", pitch);
-		printf("x: %f\n", current_x);
-		printf("y: %f\n", current_y);
+	//	printf("roll: %f\n", roll);
+	//	printf("pitch: %f\n", pitch);
+	//	printf("x: %f\n", current_x);
+	//	printf("y: %f\n", current_y);
 		
 		double new_x = current_x;
 		double new_y = current_y;
@@ -72,8 +72,18 @@ void keypad_thread(void const *argument){
 			}
 			printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
 			if(mode == TicTacToe){
-				if (shape == BOARD) osSignalSet(drawBoard_thread_id, 0x01);
-				
+				if (shape == BOARD){
+					osSignalSet(drawBoard_thread_id, 0x01);
+				} else if (shape == O){
+					printf("draw O...\n");
+					drawO(direction);
+					osSignalSet (path_thread_id, 0x01);
+				}
+				else if (shape == X){
+					printf("draw X...\n");
+					drawX(direction);
+					osSignalSet (path_thread_id, 0x01);
+				}
 				
 			
 			}else{
@@ -105,6 +115,7 @@ osThreadDef(set_xy_thread, osPriorityNormal, 1, 0);
 osThreadDef(angle_thread, osPriorityNormal, 1, 0);
 osThreadDef(drawBoard_thread, osPriorityNormal, 1, 0);
 
+
 osThreadDef(keypad_thread, osPriorityNormal, 1, 0);
 
 
@@ -135,7 +146,6 @@ int main (void) {
 	//motor_1_angle = 120;
 	//motor_2_angle = 90;
 	//set_angles();
-	
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
 	path_thread_id = osThreadCreate(osThread(path_thread), NULL);
@@ -143,8 +153,7 @@ int main (void) {
 	set_xy_thread_id = osThreadCreate(osThread(set_xy_thread), NULL);
 	angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
 	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
-	
-	
+
 	osKernelStart ();                         // start thread execution 
 	
 }

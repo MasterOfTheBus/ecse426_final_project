@@ -12,8 +12,11 @@
 #define SQUARE 1
 #define RECTANGLE 2
 #define TRIANGLE 3
-
 #define BOARD 4
+#define O 5
+#define X 6
+
+
 
 #define RESET 500
 

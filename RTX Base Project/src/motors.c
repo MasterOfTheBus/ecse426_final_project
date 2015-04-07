@@ -77,11 +77,12 @@ void path_thread(void const *argument){
 	while(1){
 		osSignalWait (0x01, osWaitForever);
 		goTo(x_path[0], y_path[0]);
+		osDelay(1000);
 		upDown(down);
-		osDelay(500);
+		osDelay(1000);
 		for(int i=1; i < 50; i++){
 			goTo(x_path[i], y_path[i]);
-			//printf("position : {%f,%f}\n", x_path[i], y_path[i]);
+			printf("position : {%f,%f}\n", x_path[i], y_path[i]);
 			set_angles();
 			osDelay(50);
 		if(x_path[i]==x_path[i-1]&&y_path[i]==y_path[i-1]) break;
@@ -275,7 +276,7 @@ void drawBoard_thread(void const *argument){
 		upDown(down);
 		for(float i=0; i<=6; i=i+0.1){
 			goTo(-5+i, 10);
-			printf("print something...\n");
+			//printf("print something...\n");
 			osDelay(50);
 		}
 		upDown(up);
@@ -312,16 +313,56 @@ void drawBoard_thread(void const *argument){
 	}
 }
 
-void drawX_thread(void const *argument){
-	while(1){
-		osSignalWait (0x01, osWaitForever);
-		// draw first line
-		upDown(up);
-		osDelay(500);
-		goTo(-5, 10);
-		
+int x_start[3] = { -4, -2, 0};
+int y_start[3] = {11, 9 , 7};
+
+void drawO(int direction){
+	int x = x_start[(direction-1)%3];
+	int y = y_start[(direction-1)/3];
+	
+	for(int i = 0; i < 50; i++){
+		x_path[i] = x+0.5*cos(2*PI*i/50);
+		y_path[i] = y+0.5*sin(2*PI*i/50);
 	}
 	
 }
+
+void drawX(int direction){
+	int x = x_start[(direction-1)%3];
+	int y = y_start[(direction-1)/3];
 	
+	x_path[0] = x;
+	y_path[0] = y;
+	for(int i = 1; i < 5; i++){
+		x_path[i] = x_path[i-1] + 0.1;
+		y_path[i] = y_path[i-1] + 0.1;
+	}
+	for(int i = 5; i < 15; i++){
+		x_path[i] = x_path[i-1] - 0.1;
+		y_path[i] = y_path[i-1] - 0.1;
+	}
+	
+	for(int i = 15; i < 20; i++){
+		x_path[i] = x_path[i-1] + 0.1;
+		y_path[i] = y_path[i-1] + 0.1;
+	}
+	
+	for(int i = 20; i < 25; i++){
+		x_path[i] = x_path[i-1] + 0.1;
+		y_path[i] = y_path[i-1] - 0.1;
+	}
+	
+	for(int i = 25; i < 35; i++){
+		x_path[i] = x_path[i-1] - 0.1;
+		y_path[i] = y_path[i-1] + 0.1;
+	}
+	
+	for(int i = 35; i < 50; i++){
+		x_path[i] = x_path[i-1];
+		y_path[i] = y_path[i-1];
+	}
+}
+
+
+
 

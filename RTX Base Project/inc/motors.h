@@ -55,6 +55,8 @@ extern double motor_2_angle;
 
 
 
+
+
 void motors_init();
 void set_angles();
 void path_thread(void const *argument);
@@ -69,9 +71,9 @@ void drawTriangle(double x, double y);
 void drawSegment(double x, double y, double angle);
 void drawBoard_thread(void const *argument);
 
-void drawX_thread(void const *argument);
 
-
+void drawO(int direction);
+void drawX(int direction);
 #endif
 
 
