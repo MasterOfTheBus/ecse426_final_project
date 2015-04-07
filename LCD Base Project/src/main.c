@@ -189,8 +189,7 @@ osThreadId example_1c_thread;
 
 // To test wireless module and SPI
 void wireless_testbench (){
-	// initialize wireless SPI
-	wireless_Init();
+
 #if 0
 	printf("\n\n");
 
@@ -291,6 +290,8 @@ void wireless_testbench (){
  * main: initialize and start the system
  */
 int main (void) {
+	// initialize wireless SPI
+	wireless_Init();
 	wireless_testbench();
 	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
