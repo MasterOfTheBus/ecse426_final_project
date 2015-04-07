@@ -59,10 +59,17 @@ void set_xy_thread(void const *argument){
 	}
 }
 
+
+// After moving keypad to the other board, use this thread the collect data from the wireless!
 void keypad_thread(void const *argument){
 	while(1){
 		Keypad_read();
 		if (send == 1){
+			if (shape == 0 && direction == RESET){ // move to bottom left corner
+				upDown(up);
+				osDelay(500);
+				goTo(-7, 6);
+			}
 			printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
 			if(mode == TicTacToe){
 				if (shape == BOARD) osSignalSet(drawBoard_thread_id, 0x01);

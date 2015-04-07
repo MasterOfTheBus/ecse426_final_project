@@ -68,6 +68,10 @@ void drawRectangle(double x, double y);
 void drawTriangle(double x, double y);
 void drawSegment(double x, double y, double angle);
 void drawBoard_thread(void const *argument);
+
+void drawX_thread(void const *argument);
+
+
 #endif
 
 

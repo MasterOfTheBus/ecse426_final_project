@@ -321,7 +321,7 @@ void Keypad_read(){
 		}else if (mode == TicTacToe){
 			
 			printf("I am here...\n");
-			if (result < 10){
+			if (result < 10){ // alternate 
 				shape = 0; //
 				direction = result;
 				send = 1;

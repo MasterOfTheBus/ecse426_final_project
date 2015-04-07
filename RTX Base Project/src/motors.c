@@ -312,3 +312,16 @@ void drawBoard_thread(void const *argument){
 	}
 }
 
+void drawX_thread(void const *argument){
+	while(1){
+		osSignalWait (0x01, osWaitForever);
+		// draw first line
+		upDown(up);
+		osDelay(500);
+		goTo(-5, 10);
+		
+	}
+	
+}
+	
+
