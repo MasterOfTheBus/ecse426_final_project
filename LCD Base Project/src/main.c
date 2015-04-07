@@ -278,7 +278,8 @@ void wireless_testbench (){
 	// ---------------- Transmit testing --------------------
 #if 1
 	uint8_t i = 0;
-	while (1){
+	while (1) {
+		printf("transmitting: %i\n", i);
 		Transmit(&i, 1);
 		i = (i + 1) % 10;
 		delay(100);

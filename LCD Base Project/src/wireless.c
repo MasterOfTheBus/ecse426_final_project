@@ -205,7 +205,28 @@ void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite) {
 	CC2500_CS_HIGH();
 }
 
+/*
+All the transmitters should work
+checked the GDO register at 0x06 for bit asserted then de-asserted
+checked the marcstate register
+-go to idle when transmit is done?
+-timer to check the registers?
+*/
 void Transmit(uint8_t *buffer, uint16_t num_bytes) {
+	CC2500_CS_LOW();
+	
+	//uint8_t current_status;
+	status_state(CC2500_Strobe(SIDLE));								
+	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
+	
+	SPI_Write(buffer, CC2500REG_TX_FIFO, 0x01);
+	
+	status_state(CC2500_Strobe(STX));
+	while (status_state(CC2500_Strobe(SNOP)) != TX);
+	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
+	
+	CC2500_CS_HIGH();
+#if 0
 	CC2500_CS_LOW();
 	
 	uint8_t current_status;
@@ -215,9 +236,9 @@ void Transmit(uint8_t *buffer, uint16_t num_bytes) {
 		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 	
-	// change config for GDOx_CFG to indicate packet sent
-	uint8_t config_GDO = 0x06;
-	SPI_Write(&config_GDO, 0x00, 0x01);
+//	// change config for GDOx_CFG to indicate packet sent
+//	uint8_t config_GDO = 0x06;
+//	SPI_Write(&config_GDO, 0x00, 0x01);
 	
 //	current_status = status_state(CC2500_Strobe(STX));
 //	
@@ -225,19 +246,18 @@ void Transmit(uint8_t *buffer, uint16_t num_bytes) {
 //		current_status = status_state(CC2500_Strobe(SNOP));
 //	}
 
-	uint8_t NumBytesinFIFO;
-	SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
-	printf ("#bytes befoe: 0x%02x\n", NumBytesinFIFO);
+//	uint8_t NumBytesinFIFO;
+//	SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
+//	printf ("#bytes before write: 0x%02x\n", NumBytesinFIFO);
 	uint8_t GDO2; // the GDOx_CFG value
 	for (; num_bytes > 0; num_bytes--) {
 		// check for overflow
 		SPI_Read(&GDO2, 0x00, 1); // check for filling past the threshold
 		if ((GDO2 & 0x1F) != 0x02) {
-			printf("transmitting: %i\n", buffer[num_bytes-1]);
 			SPI_Write(&buffer[num_bytes-1], CC2500REG_TX_FIFO, 0x01);
 			
-			SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
-			printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
+//			SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
+//			printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
 			
 //			current_status = CC2500_Strobe(SNOP);
 //			printf("bytes avail: %i\n", current_status & 0x0F);
@@ -247,26 +267,30 @@ void Transmit(uint8_t *buffer, uint16_t num_bytes) {
 		wireless_delay(100);
 	}
 	
-//	SPI_Read(&GDO2, 0x00, 1); // check that packet has been sent?
-//	//printf("GDO2: 0x%02x\n", GDO2); // geting 0x29 CHiP_RDYn, want 0x06?
-//	// wait for gdo2 to go to 0x06 and that it is asserted?
-//	// does the register value have to change?
-//	while ((GDO2 & 0x1F) != 0x06) {
-//		printf("GDO2: 0x%02x\n", GDO2);
-//		SPI_Read(&GDO2, 0x00, 1);
-//	}
+//	// change config for GDOx_CFG to indicate packet sent
+//	uint8_t config_GDO = 0x06;
+//	SPI_Write(&config_GDO, 0x00, 0x01);
 	
 	current_status = status_state(CC2500_Strobe(STX));
-	
+
 	while (current_status != TX){
 		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 	
-	uint8_t pktstatus;
-	SPI_Read(&pktstatus, PKTSTATUS, READ_STATUS);
-	// wait until end of packet
-	while((pktstatus & 0x04) == 0x04) {
-		SPI_Read(&pktstatus, PKTSTATUS, READ_STATUS);
+//	uint8_t pktstatus;
+//	SPI_Read(&pktstatus, PKTSTATUS, READ_STATUS);
+//	// wait until end of packet
+//	while((pktstatus & 0x04) == 0x04) {
+//		printf("pktstatus");
+//		SPI_Read(&pktstatus, PKTSTATUS, READ_STATUS);
+//	}
+	
+	// check for the transmit end state
+	SPI_Read(&current_status, MARCSTATE, READ_STATUS);
+	while ((current_status & 0x1F) != TX_END){
+		printf("current status: %i\n", current_status);
+		SPI_Read(&current_status, MARCSTATE, READ_STATUS);
+		wireless_delay(100);
 	}
 	
 	current_status = status_state(CC2500_Strobe(SIDLE));
@@ -274,10 +298,11 @@ void Transmit(uint8_t *buffer, uint16_t num_bytes) {
 		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 	
-	config_GDO = 0x29; // conigure back to CHIP_RDYn
-	SPI_Write(&config_GDO, 0x00, 0x01);
+//	config_GDO = 0x29; // conigure back to CHIP_RDYn
+//	SPI_Write(&config_GDO, 0x00, 0x01);
 	
 	CC2500_CS_HIGH();
+	#endif
 }
 
 void ReadRecvBuffer(uint8_t *buffer) {
@@ -285,7 +310,7 @@ void ReadRecvBuffer(uint8_t *buffer) {
 	CC2500_CS_LOW();
 	
 	uint8_t current_status; 
-	uint8_t data_received; 
+	//uint8_t data_received; 
 	current_status = status_state(CC2500_Strobe(SIDLE));								
 	
 	while (current_status != 0x00){
@@ -298,44 +323,19 @@ void ReadRecvBuffer(uint8_t *buffer) {
 		current_status = status_state(CC2500_Strobe(SNOP));
 	}
 
+	uint8_t i = 0;
 	while (current_status == 0x01){
 		uint8_t NumBytesinFIFO = 0x08;
 		SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
 			//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
-			SPI_Read(&data_received, CC2500REG_RX_FIFO, 0x01);
-			printf ("data: 0x%02x\n", data_received);
+			SPI_Read(&buffer[i], CC2500REG_RX_FIFO, 0x01);
+			printf ("data: 0x%02x\n", buffer[i]);
 		}
 		wireless_delay(100);
 		current_status = status_state(CC2500_Strobe(SNOP));
+		i++;
 	}
-	
-	
-	
-	
-//	CC2500_CS_LOW();
-//	
-//	CC2500_Strobe(SRX);
-//	
-//	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
-//	
-//	uint8_t bytes_avail = CC2500_Strobe(SNOP) & 0x0F;
-//	
-//	if (bytes_avail > 0) {
-//		if (bytes_avail > 1) {
-//			SPI_Read(buffer, 0xBF, bytes_avail);
-//			printf("received: %i\n", buffer[0]);
-//		} else {
-//			SPI_Read(buffer, 0xFF, bytes_avail);
-//			printf("received: %i\n", buffer[0]);
-//		}
-//	}
-//	
-//	CC2500_Strobe(SIDLE);
-//	
-//	while ((GPIO_ReadInputDataBit(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_PIN) & 0x80) == 0x80);
-//	
-//	CC2500_Strobe(SFRX);
 		
 	CC2500_CS_HIGH();
 }

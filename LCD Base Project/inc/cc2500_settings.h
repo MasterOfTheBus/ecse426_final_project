@@ -34,7 +34,7 @@
 #define VAL_CC2500_DEVIATN 	0x00	
 
 
-#define VAL_CC2500_MCSM1 		0x02	
+#define VAL_CC2500_MCSM1 		0x00	// 0x02
 #define VAL_CC2500_MCSM0 		0x18	
 
 #define VAL_CC2500_FOCCFG 	0x1D	
