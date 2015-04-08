@@ -278,17 +278,17 @@ void CC2500_ReadRecvBuffer(uint8_t *buffer) {
 	CC2500_Change_State (SIDLE);	
 	CC2500_Change_State (SRX);	
 
-	uint8_t i = 0;
+	//uint8_t i = 0;
 	while (CC2500_state == RX_STATE){
 		uint8_t NumBytesinFIFO;
 		CC2500_SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
 			//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
-			CC2500_SPI_Read(&buffer[i], CC2500REG_RX_FIFO, 0x01);
-			printf ("data: 0x%02x\n", buffer[i]);
+			CC2500_SPI_Read(buffer, CC2500REG_RX_FIFO, 0x01);
+			//printf ("data: 0x%02x\n", buffer[i]);
 		}
 		CC2500_state = (status_state(CC2500_Strobe(SNOP)));
-		i++;
+		//i++;
 	}
 		
 	CC2500_CS_HIGH();
