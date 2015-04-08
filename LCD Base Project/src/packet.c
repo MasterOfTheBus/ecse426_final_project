@@ -17,7 +17,7 @@ uint8_t makeCallbackPkt(uint8_t *pkt, int8_t x, int8_t y, uint8_t fail) {
 		int8_t pkt_x = x + 7;
 		uint8_t pkt_y = y - 6;
 		*pkt = 0x00;
-		*pkt = *pkt | (pkt_x >> 4);
+		*pkt = *pkt | (pkt_x << 4);
 		*pkt = *pkt | pkt_y;
 	}
 	return 1;

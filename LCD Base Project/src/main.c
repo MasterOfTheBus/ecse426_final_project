@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include "wireless.h"
+#include "packet.h"
 
 static void delay(__IO uint32_t nCount)
 {
@@ -275,19 +276,24 @@ void wireless_testbench (){
 	printf("status: 0x%02x\n", status);
 #endif
 	// ---------------- Transmit testing --------------------
-#if 0
+#if 1
 	uint8_t i = 53;
+	uint8_t buff;
 	while (1) {
 		printf("transmitting: %i\n", i);
+		uint8_t pkt;
+		makeLCD2MotorPkt(&pkt, 13, 0);
 		Transmit(&i, 1);
+		ReadRecvBuffer(&buff);
 		//i = (i + 1) % 10;
 		delay(100);
 	}
 #endif
-#if 1
+#if 0
 	uint8_t buff;
 	while (1) {
 		ReadRecvBuffer(&buff);
+		
 		delay(100);
 	}
 #endif
