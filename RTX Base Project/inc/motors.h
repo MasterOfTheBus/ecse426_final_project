@@ -8,13 +8,13 @@
 // GPIO MOTOR CLOCKS
 #define MOTOR_CLOCK RCC_AHB1Periph_GPIOB
 
-// GPIO MOTOR PORT
-#define MOTOR_PORT GPIOB
+//// GPIO MOTOR PORT
+//#define MOTOR_PORT GPIOB
 
-// GPIO MOTOR PINS
-#define MOTOR_0 GPIO_Pin_11
-#define MOTOR_1 GPIO_Pin_12
-#define MOTOR_2 GPIO_Pin_13
+//// GPIO MOTOR PINS
+//#define MOTOR_0 GPIO_Pin_11
+//#define MOTOR_1 GPIO_Pin_12
+//#define MOTOR_2 GPIO_Pin_13
 
 // Constants
 #define arm_a (double) 6.5

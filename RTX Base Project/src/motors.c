@@ -93,7 +93,7 @@ void path_thread(void const *argument){
 
 void upDown(int in){
 	
-	if (in == up) motor_2_angle=120;
+	if (in == up) motor_2_angle=110;
 	if (in == down) motor_2_angle=180;
 	set_angles();
 

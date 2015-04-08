@@ -63,7 +63,9 @@ void set_xy_thread(void const *argument){
 // After moving keypad to the other board, use this thread the collect data from the wireless!
 void keypad_thread(void const *argument){
 	while(1){
+		// wait for a signal from wireless instead of reading keypad~
 		Keypad_read();
+		
 		if (send == 1){
 			if (shape == 0 && direction == RESET){ // move to bottom left corner
 				upDown(up);
