@@ -211,13 +211,14 @@ uint8_t Transmit(uint8_t *buffer, uint16_t num_bytes) {
 	status_state(CC2500_Strobe(SIDLE));								
 	while (status_state(CC2500_Strobe(SNOP)) != IDLE);
 	
-	uint8_t NumBytesinFIFO;
-	SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
-	if (NumBytesinFIFO >= num_bytes) {
+//	uint8_t NumBytesinFIFO;
+//	SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
+//	if (NumBytesinFIFO >= num_bytes) {
+//		printf("sending\n");
 		SPI_Write(buffer, CC2500REG_TX_FIFO, num_bytes);
-	} else {
-		return 0;
-	}
+//	} else {
+//		return 0;
+//	}
 
 	status_state(CC2500_Strobe(STX));
 	while (status_state(CC2500_Strobe(SNOP)) != TX);

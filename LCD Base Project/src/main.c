@@ -275,12 +275,19 @@ void wireless_testbench (){
 	printf("status: 0x%02x\n", status);
 #endif
 	// ---------------- Transmit testing --------------------
-#if 1
-	uint8_t i = 0;
+#if 0
+	uint8_t i = 53;
 	while (1) {
 		printf("transmitting: %i\n", i);
 		Transmit(&i, 1);
-		i = (i + 1) % 10;
+		//i = (i + 1) % 10;
+		delay(100);
+	}
+#endif
+#if 1
+	uint8_t buff;
+	while (1) {
+		ReadRecvBuffer(&buff);
 		delay(100);
 	}
 #endif
