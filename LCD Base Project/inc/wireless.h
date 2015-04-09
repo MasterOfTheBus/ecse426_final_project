@@ -1,5 +1,13 @@
+/**
+   @file wireless.h
+   @brief Driver for the CC2500 wireless transceiver.
+   @date 2015/04/08
+*/
+
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
+#include "stm32f4xx_exti.h"
+#include "misc.h"
 #include <stdio.h>
 
 /* Generalize the file for transmitter and receiver on different boards */
@@ -23,9 +31,12 @@
 #define CC2500_SPI_MISO_SOURCE        GPIO_PinSource5
 #define CC2500_SPI_MOSI_SOURCE        GPIO_PinSource6
 
-#define IDLE 0x00
-#define RX 0x01
-#define TX 0x02
+#define CC2500_INT_PIN_SOURCE					EXTI_PinSource5
+#define CC2500_INT_PORT_SOURCE				EXTI_PortSourceGPIOE
+
+#define IDLE_STATE 0x00
+#define RX_STATE 0x01
+#define TX_STATE 0x02
 
 #define SRES 0x30
 #define SFSTXON 0x31
@@ -61,12 +72,46 @@
 #define READ_STATUS 0x02
 #define PKTSTATUS 0x38
 
-static uint8_t SendByte(uint8_t byte);
-void wireless_Init(void);
+/**
+
+*/
+static uint8_t CC2500_SendByte(uint8_t byte);
+void CC2500_Change_State(uint8_t Strobe);
+/**
+
+*/
+void CC2500_Init(void);
+
+/**
+
+*/
 uint8_t CC2500_Strobe(uint8_t Strobe);
-void SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
-void SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
-void ReadRecvBuffer(uint8_t *buffer);
-uint8_t Transmit(uint8_t *buffer, uint16_t num_bytes);
+
+/**
+
+*/
+void CC2500_SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
+
+/**
+
+*/
+void CC2500_SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
+
+/**
+*/
+void CC2500_ReadRecvBuffer(uint8_t *buffer);
+
+/**
+
+*/
+uint8_t CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes);
+
+/**
+
+*/
 void wireless_delay(long num_ticks);
+
+/**
+
+*/
 uint8_t status_state(uint8_t status);
