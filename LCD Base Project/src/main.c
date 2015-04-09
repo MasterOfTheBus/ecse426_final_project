@@ -33,7 +33,7 @@ static void delay(__IO uint32_t nCount)
   }
 }
 
-
+#if 0
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
   * @brief    Illustartes a simple shape draw and fill, and string dsiplay
@@ -185,7 +185,7 @@ void example_1c(void const *argument){
 		osDelay(250);
 	}
 }
-
+#endif
 void ReceiveData(void const *argument) {
 	uint8_t r_buffer;
 	uint8_t prev;
@@ -202,16 +202,16 @@ void ReceiveData(void const *argument) {
 	}
 }
 
-osThreadDef(example_1a, osPriorityNormal, 1, 0);
-osThreadDef(example_1b, osPriorityNormal, 1, 0);
-osThreadDef(example_1c, osPriorityNormal, 1, 0);
+//osThreadDef(example_1a, osPriorityNormal, 1, 0);
+//osThreadDef(example_1b, osPriorityNormal, 1, 0);
+//osThreadDef(example_1c, osPriorityNormal, 1, 0);
 
 osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
 
 // ID for theads
-osThreadId example_1a_thread;
-osThreadId example_1b_thread;
-osThreadId example_1c_thread;
+//osThreadId example_1a_thread;
+//osThreadId example_1b_thread;
+//osThreadId example_1c_thread;
 
 osThreadId RecvData_thread;
 

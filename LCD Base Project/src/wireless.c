@@ -113,6 +113,9 @@ void LowLevel_Init(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
 
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+
 	/* Configure GPIO PINs to detect Interrupts */ //-------------------------------------------------------------------------------------------------------------
 	GPIO_InitTypeDef GPIO_InitStructure_Int;
   GPIO_InitStructure.GPIO_Pin = CC2500_SPI_MISO_PIN; // The pin to read interrupt data from; the accelerometer in this case
@@ -122,7 +125,7 @@ void LowLevel_Init(void){
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL; // floating
   GPIO_Init(CC2500_SPI_GPIO_PORT, &GPIO_InitStructure_Int);
   
-	SYSCFG_EXTILineConfig(CC2500_INT_PORT_SOURCE, CC2500_INT_PIN_SOURCE); // the interrupt port is GPIOB
+	SYSCFG_EXTILineConfig(CC2500_INT_PORT_SOURCE, CC2500_INT_PIN_SOURCE); // the interrupt port is GPIOE
 	
 	EXTI_InitTypeDef exti_init;
 	exti_init.EXTI_Line = EXTI_Line5; // line 0
@@ -132,7 +135,7 @@ void LowLevel_Init(void){
 	EXTI_Init(&exti_init);
 	
 	NVIC_InitTypeDef nvic_init;
-	nvic_init.NVIC_IRQChannel = EXTI9_5_IRQn; // exti line 14 matching exti
+	nvic_init.NVIC_IRQChannel = EXTI9_5_IRQn; // exti line 5 matching exti
 	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x03; // high priority
 	nvic_init.NVIC_IRQChannelSubPriority = 0x03; // high priority
 	nvic_init.NVIC_IRQChannelCmd = ENABLE;

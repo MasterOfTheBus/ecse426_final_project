@@ -121,7 +121,7 @@ static void CC2500_LowLevel_Init(void){
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
 	
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+	//RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	
 	/* Configure GPIO PINs to detect Interrupts */ //-------------------------------------------------------------------------------------------------------------
