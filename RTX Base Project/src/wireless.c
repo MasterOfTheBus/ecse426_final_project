@@ -120,6 +120,34 @@ static void CC2500_LowLevel_Init(void){
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
+	
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	
+	/* Configure GPIO PINs to detect Interrupts */ //-------------------------------------------------------------------------------------------------------------
+	GPIO_InitTypeDef GPIO_InitStructure_Int;
+  GPIO_InitStructure.GPIO_Pin = CC2500_SPI_MISO_PIN; // The pin to read interrupt data from; the accelerometer in this case
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; // input from GPIO
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL; // floating
+  GPIO_Init(CC2500_SPI_GPIO_PORT, &GPIO_InitStructure_Int);
+  
+	SYSCFG_EXTILineConfig(CC2500_INT_PORT_SOURCE, CC2500_INT_PIN_SOURCE); // the interrupt port is GPIOB
+	
+	EXTI_InitTypeDef exti_init;
+	exti_init.EXTI_Line = EXTI_Line14; // line 0
+	exti_init.EXTI_Mode = EXTI_Mode_Interrupt; // configuring an interrupt
+	exti_init.EXTI_Trigger = EXTI_Trigger_Rising; // rising for active high
+	exti_init.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&exti_init);
+	
+	NVIC_InitTypeDef nvic_init;
+	nvic_init.NVIC_IRQChannel = EXTI15_10_IRQn; // exti line 14 matching exti
+	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x03; // high priority
+	nvic_init.NVIC_IRQChannelSubPriority = 0x03; // high priority
+	nvic_init.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&nvic_init);
 
   // Deselect : Chip Select high
   GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN);
@@ -268,30 +296,18 @@ void CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes) {
 
 /*
 sets transmitter to receive mode then receives transmitted data
+
+do it with interrupts or with an if statement if stuck
 */
 void CC2500_ReadRecvBuffer(uint8_t *buffer) {
-	
-	CC2500_CS_LOW();
-	
-	//uint8_t data_received; 
-
-	CC2500_Change_State (SIDLE);	
-	CC2500_Change_State (SRX);	
-
-	//uint8_t i = 0;
-	while (CC2500_state == RX_STATE){
+	//CC2500_Change_State (SRX);	
+//	CC2500_state = (status_state(CC2500_Strobe(SNOP)));
+//	if (CC2500_state == RX_STATE){
 		uint8_t NumBytesinFIFO;
 		CC2500_SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
-			//printf ("#bytes: 0x%02x\n", NumBytesinFIFO);
 			CC2500_SPI_Read(buffer, CC2500REG_RX_FIFO, 0x01);
-			//printf ("data: 0x%02x\n", buffer[i]);
 		}
-		CC2500_state = (status_state(CC2500_Strobe(SNOP)));
-		//i++;
-	}
-		
-	CC2500_CS_HIGH();
 }
 
 void CC2500_Init(void) {

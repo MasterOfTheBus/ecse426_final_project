@@ -1,5 +1,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_conf.h"
+#include "stm32f4xx_exti.h"
+#include "misc.h"
 #include <stdio.h>
 
 // generalize the file for transmitter and receiver on different boards
@@ -21,6 +23,9 @@
 #define CC2500_SPI_SCK_SOURCE         GPIO_PinSource13
 #define CC2500_SPI_MISO_SOURCE        GPIO_PinSource14
 #define CC2500_SPI_MOSI_SOURCE        GPIO_PinSource15
+
+#define CC2500_INT_PIN_SOURCE					EXTI_PinSource14
+#define CC2500_INT_PORT_SOURCE				EXTI_PortSourceGPIOB
 
 // strobe commands
 #define SRES 0x30
@@ -58,9 +63,9 @@
 static uint8_t CC2500_SendByte(uint8_t byte);
 void CC2500_Init(void);
 uint8_t CC2500_Strobe(uint8_t Strobe);
+void CC2500_Change_State(uint8_t Strobe);
 void CC2500_SPI_Read(uint8_t* pBuffer, uint8_t address, uint16_t bytesToRead);
 void CC2500_SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 void CC2500_ReadRecvBuffer(uint8_t *buffer);
 void CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes);
-void delay(long num_ticks);
-
+uint8_t status_state(uint8_t status);
