@@ -248,7 +248,7 @@ void line(void const *argument){
 	}
 
 	
-void lcd_drawing_thread(void const *arguemnt){
+void lcd_drawing_thread(void const *argument){
 	
 while(1){
 
@@ -281,13 +281,10 @@ while(1){
 						y1=y2;
 						y2=y2+10*sin(PI*direction/180);
 						osSignalSet(line_thread_id, 0x01);
-						
-
-						
-				
+			
 					}
 				}
-			}
+		}
 		//printf("before delay");
 		osDelay(250);
 		}
