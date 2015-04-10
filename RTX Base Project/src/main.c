@@ -117,7 +117,28 @@ void keypad_thread(void const *argument){
 								upDown(down);
 								for(float i=0; i<=4; i=i+0.1){
 									goTo(-4 + ((win - 3)*2), 11 + i);
-									//printf("print something...\n");
+									osDelay(50);
+								}
+								upDown(up);
+							}
+							else if(win == 6){
+								osDelay(5000);
+								goTo(-4, 11);
+								osDelay(500);
+								upDown(down);
+								for(float i=0; i<=5; i=i+0.1){
+									goTo(-4 + i , 11 - i);
+									osDelay(50);
+								}
+								upDown(up);
+							}
+							else if(win == 7){
+								osDelay(5000);
+								goTo(0, 11);
+								osDelay(500);
+								upDown(down);
+								for(float i=0; i<=5; i=i+0.1){
+									goTo(0 - i , 11 - i);
 									osDelay(50);
 								}
 								upDown(up);
@@ -125,26 +146,6 @@ void keypad_thread(void const *argument){
 						}
 					}
 				}
-//				else{
-//					int win = checkWin(board);
-//					if(win < 2){
-//						goTo(-4, 11 - (win * 2));
-//						osDelay(500);
-//						upDown(down);
-//						for(float i=0; i<=4; i=i+0.1){
-//							goTo(-4+i, 11 - (win * 2));
-//							//printf("print something...\n");
-//							osDelay(50);
-//						}
-//					}
-//				}
-//				else if (shape == X){
-//					printf("draw X...\n");
-//					int move = AI(board);
-//					drawX(move);
-//					osSignalSet (path_thread_id, 0x01);
-//					osDelay(2000);
-//				}
 				
 			
 			}else{
