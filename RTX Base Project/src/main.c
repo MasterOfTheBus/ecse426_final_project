@@ -10,6 +10,7 @@
 #include "wireless.h"
 #include "MEMS.h"
 #include "UI.h"
+#include "tictactoe.h"
 #include <stdio.h>
 
 double pitch;
@@ -74,18 +75,76 @@ void keypad_thread(void const *argument){
 			}
 			printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
 			if(mode == TicTacToe){
+				int board[9];
 				if (shape == BOARD){
 					osSignalSet(drawBoard_thread_id, 0x01);
-				} else if (shape == O){
+					osDelay(19000);
+					board_init(board);
+					
+					int move = AI(board);
+					drawX(move);
+					osSignalSet (path_thread_id, 0x01);
+					osDelay(2000);
+				} else if(checkWin(board) == 9) {//if (shape == O){
 					printf("draw O...\n");
-					drawO(direction);
-					osSignalSet (path_thread_id, 0x01);
+					if(board[direction-1] == 0){
+						drawO(direction);
+						board[direction-1] = 1;
+						osSignalSet (path_thread_id, 0x01);
+						osDelay(7000);
+						int move = AI(board);
+						if(move != 0){
+							printf("draw X...\n");
+							drawX(move);
+							osSignalSet (path_thread_id, 0x01);
+							int win = checkWin(board);
+							if(win < 3){
+								osDelay(5000);
+								goTo(-4, 11 - (win * 2));
+								osDelay(500);
+								upDown(down);
+								for(float i=0; i<=4; i=i+0.1){
+									goTo(-4+i, 11 - (win * 2));
+									//printf("print something...\n");
+									osDelay(50);
+								}
+								upDown(up);
+							}
+							else if(win < 6){
+								osDelay(5000);
+								goTo(-4 + ((win - 3)*2), 11);
+								osDelay(500);
+								upDown(down);
+								for(float i=0; i<=4; i=i+0.1){
+									goTo(-4 + ((win - 3)*2), 11 + i);
+									//printf("print something...\n");
+									osDelay(50);
+								}
+								upDown(up);
+							}
+						}
+					}
 				}
-				else if (shape == X){
-					printf("draw X...\n");
-					drawX(direction);
-					osSignalSet (path_thread_id, 0x01);
-				}
+//				else{
+//					int win = checkWin(board);
+//					if(win < 2){
+//						goTo(-4, 11 - (win * 2));
+//						osDelay(500);
+//						upDown(down);
+//						for(float i=0; i<=4; i=i+0.1){
+//							goTo(-4+i, 11 - (win * 2));
+//							//printf("print something...\n");
+//							osDelay(50);
+//						}
+//					}
+//				}
+//				else if (shape == X){
+//					printf("draw X...\n");
+//					int move = AI(board);
+//					drawX(move);
+//					osSignalSet (path_thread_id, 0x01);
+//					osDelay(2000);
+//				}
 				
 			
 			}else{

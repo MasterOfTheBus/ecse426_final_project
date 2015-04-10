@@ -439,6 +439,11 @@
               <FileType>1</FileType>
               <FilePath>.\src\KalmanFilter.c</FilePath>
             </File>
+            <File>
+              <FileName>tictactoe.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\tictactoe.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

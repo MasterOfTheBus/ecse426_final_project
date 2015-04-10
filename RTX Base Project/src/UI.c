@@ -323,8 +323,8 @@ void Keypad_read(){
 			printf("I am here...\n");
 			if (result < 10){ // alternate 
 				printf("setting direction...\n");
-				if(shape == BOARD || shape == X) shape = O; 
-				else shape = X;
+				if(shape == BOARD || shape == O) shape = X; 
+				else shape = O;
 				direction = result;
 				send = 1;
 			}
