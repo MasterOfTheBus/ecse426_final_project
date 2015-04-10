@@ -425,26 +425,19 @@
               <FilePath>.\src\fputc_debug.c</FilePath>
             </File>
             <File>
-              <FileName>LCD.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\LCD.h</FilePath>
-            </File>
-            <File>
               <FileName>LCD.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\LCD.c</FilePath>
+            </File>
+            <File>
+              <FileName>keypad.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\keypad.c</FilePath>
             </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Images</GroupName>
-          <Files>
-            <File>
-              <FileName>background16bpp.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\inc\background16bpp.h</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>Gyroscope_Drivers</GroupName>
