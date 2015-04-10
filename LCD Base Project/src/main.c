@@ -74,7 +74,7 @@ void keypad_thread(void const *argument){
 	int lastDirection;
 	int lastShape;
 	int lastUserInput;
-	
+
 	double last_x1;
 	double last_y1;
 	while(1){
@@ -84,21 +84,19 @@ void keypad_thread(void const *argument){
 //		direction = 45;
 //		mode = 1;
 		
-		
+	if(shape != 500){	
 		printf("--------------------");	
 		printf("send: %i\n", send);		
 		printf("shape: %i\n", shape);
 		printf("direction: %i\n", direction);
 		printf("mode: %i\n", mode);
-	//	done =0;
-		if(/*shape != 0 &&*/(shape != lastShape || direction!=lastDirection || mode!=lastMode)){
 			if (send == 0) blink = 1;
 			else {
 				blink = 0;
 				// send mode, direction and shape
 			}
 			printf("blink: %i\n", blink);
-		}
+
 		
 		if (direction == RESET){
 			LCD_Clear(LCD_COLOR_WHITE);
@@ -110,43 +108,41 @@ void keypad_thread(void const *argument){
 			if (shape == SQUARE) {
 				if(blink == 0) {
 					osSignalSet (drawSquare_thread_id, 0x01);
-					//osDelay(50);
-					
+					lastShape = shape; 
+					shape =500;
 				}else {
 					osSignalSet (blinkSquare_thread_id, 0x01);
+					lastShape = shape; 
 					osDelay(50);
 				}
 				
-				lastShape = shape;
-				lastMode = mode;
-				lastDirection = direction;
-				lastUserInput = userInput;
+				
+
 			}else if (shape == RECTANGLE) {
 				if(blink == 0) {
 					osSignalSet (drawRectangle_thread_id, 0x01);
-			//		osDelay(50);
+					lastShape = shape; 
+					shape =500;
 				}else{
 					osSignalSet (blinkRectangle_thread_id, 0x01);
+					lastShape = shape; 
 					osDelay(50);
 				}
-				lastShape = shape;
-				lastMode = mode;
-				lastDirection = direction;
-				lastUserInput = userInput;
+				
+
 			}else if (shape == TRIANGLE) {
 				if(blink == 0) {
 					osSignalSet (drawTriangle_thread_id, 0x01);
-			//		osDelay(50);
+					lastShape = shape; 
+					shape =500;
 				}else {
 					osSignalSet (blinkTriangle_thread_id, 0x01);
+					lastShape = shape; 
 					osDelay(50);
 				}
-				lastShape = shape;
-				lastMode = mode;
-				lastDirection = direction;
-				lastUserInput = userInput;
-			}else if (shape == 0) {
-				
+
+			}else if (shape == 0 && direction != 500) {
+				if (lastShape != 0) LCD_Clear(LCD_COLOR_WHITE);
 				if(send ==1) blink =0;
 				else blink =1;
 				
@@ -157,12 +153,15 @@ void keypad_thread(void const *argument){
 					osDelay(50);
 					x1=x2;
 					y1=y2;
-					
+					lastShape = shape; 
+					shape =500;
 				}else {
 	//				printf("blink the line!!!");
 					osSignalSet (blinkLine_thread_id, 0x01);
+					lastShape = shape; 
 					osDelay(50);
 				}
+				
 
 			}
 		
@@ -170,7 +169,7 @@ void keypad_thread(void const *argument){
 		
 		}
 		
-		
+	}
 		
 		osDelay(100);
 	}
