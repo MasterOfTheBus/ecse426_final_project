@@ -18,6 +18,12 @@
 #include "LCD.h"
 #include "math.h"
 
+#include "wireless.h"
+#include "packet.h"
+
+#define RECVSIG 0x01
+#define SENDSIG 0x02
+
 #define PI 3.141592653589793238462643383279502884197169399375105820974944592307816406286
 
 // For keypad
@@ -37,17 +43,6 @@ double xBlink=90;
 double yBlink=100;
 int blink = 1;
 int done=0;
-
-#include "wireless.h"
-#include "packet.h"
-
-#define TESTING 0
-//#if TESTING
-#include "tests.h"
-//#endif
-
-#define RECVSIG 0x01
-#define SENDSIG 0x02
 
 static void delay(__IO uint32_t nCount)
 {
@@ -70,6 +65,11 @@ osThreadId drawTriangle_thread_id;
 osThreadId blinkTriangle_thread_id;
 osThreadId drawLine_thread_id;
 osThreadId blinkLine_thread_id;
+
+osThreadId RecvData_thread;
+osThreadId TransmitData_thread;
+
+osThreadId toggle_thread;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -195,9 +195,6 @@ void keypad_thread(void const *argument){
 
 }
 
-osThreadId RecvData_thread;
-osThreadId TransmitData_thread;
-
 void ReceiveData(void const *argument) {
 	uint8_t r_buffer;
 	uint8_t prev;
@@ -227,7 +224,16 @@ void ReceiveData(void const *argument) {
 	}
 }
 
-osThreadId toggle_thread;
+void TransmitData(void const *argument) {
+	while (1) {
+		// wait for a signal to send
+		osSignalWait(SENDSIG, osWaitForever);
+		uint8_t pkt;
+		makeLCD2MotorPkt(&pkt, 13, 0);
+		printf("transmitting: 0x%02x\n", pkt);
+		CC2500_Transmit(&pkt, 1);
+	}
+}
 
 //osThreadDef(example_1a, osPriorityNormal, 1, 0);
 //osThreadDef(example_1b, osPriorityNormal, 1, 0);
@@ -242,16 +248,8 @@ osThreadDef(blinkTriangle_thread, osPriorityNormal, 1, 0);
 osThreadDef(drawLine_thread, osPriorityNormal, 1, 0);
 osThreadDef(blinkLine_thread, osPriorityNormal, 1, 0);
 
-void TransmitData(void const *argument) {
-	while (1) {
-		// wait for a signal to send
-		osSignalWait(SENDSIG, osWaitForever);
-		uint8_t pkt;
-		makeLCD2MotorPkt(&pkt, 13, 0);
-		printf("transmitting: 0x%02x\n", pkt);
-		CC2500_Transmit(&pkt, 1);
-	}
-}
+osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
+osThreadDef(TransmitData, osPriorityNormal, 1, 0);
 
 void toggle(void const *argument) {
 	while (1) {
@@ -260,15 +258,11 @@ void toggle(void const *argument) {
 		osDelay(1000);
 	}
 }
-
+osThreadDef(toggle, osPriorityNormal, 1, 0);
 //osThreadDef(example_1a, osPriorityNormal, 1, 0);
 //osThreadDef(example_1b, osPriorityNormal, 1, 0);
 //osThreadDef(example_1c, osPriorityNormal, 1, 0);
 
-osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
-osThreadDef(TransmitData, osPriorityNormal, 1, 0);
-
-osThreadDef(toggle, osPriorityNormal, 1, 0);
 
 // ID for theads
 //osThreadId example_1a_thread;
@@ -280,10 +274,6 @@ osThreadDef(toggle, osPriorityNormal, 1, 0);
  * main: initialize and start the system
  */
 int main (void) {
-	
-#if TESTING
-	wireless_testbench();
-#endif
 	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 
@@ -303,7 +293,7 @@ int main (void) {
 	blinkTriangle_thread_id = osThreadCreate(osThread(blinkTriangle_thread), NULL);	
 	drawLine_thread_id = osThreadCreate(osThread(drawLine_thread), NULL);
 	blinkLine_thread_id = osThreadCreate(osThread(blinkLine_thread), NULL);		
-	
+
 	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
 	//TransmitData_thread = osThreadCreate(osThread(TransmitData), NULL);
 	//toggle_thread = osThreadCreate(osThread(toggle), NULL);

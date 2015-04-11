@@ -12,7 +12,13 @@
 #include "MEMS.h"
 #include "UI.h"
 #include "tictactoe.h"
+#include "packet.h"
+
 #include <stdio.h>
+
+#define RECVSIG 0x01
+#define SENDSIG 0x02
+#define NEWDATA_SIG 0x04
 
 double pitch;
 double roll;
@@ -64,17 +70,6 @@ void set_xy_thread(void const *argument){
 	}
 }
 
-#include "packet.h"
-#include <stdio.h>
-
-#define TESTING 0 // 0 to not test
-#define RECVSIG 0x01
-
-#if TESTING
-#include "tests.h"
-#endif
-
-
 void ReceiveData(void const *argument){
 	uint8_t r_buffer;
 	uint8_t prev;
@@ -99,8 +94,8 @@ void ReceiveData(void const *argument){
 				// processing for non-repeated data
 				printf("read: 0x%02x\n", r_buffer);
 
+				//osSignalSet(keypad_thread_id, NEWDATA_SIG);
 			}
-
 		}
 	}
 }
@@ -110,7 +105,8 @@ void ReceiveData(void const *argument){
 void keypad_thread(void const *argument){
 	while(1){
 		// wait for a signal from wireless instead of reading keypad~
-		Keypad_read();
+		//Keypad_read();
+		osSignalWait(NEWDATA_SIG, osWaitForever);
 		
 		if (send == 1){
 			if (shape == 0 && direction == RESET){ // move to bottom left corner
@@ -228,10 +224,6 @@ osThreadDef(keypad_thread, osPriorityNormal, 1, 0);
  * main: initialize and start the system
  */
 int main (void) {
-
-#if TESTING
-	wireless_testbench ();
-#else
 	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
@@ -240,6 +232,8 @@ int main (void) {
 	MEMS_config();
 	MEMS_interrupt_config();
 	upDown(up);
+	
+	CC2500_Init();
 	
 //	while(1){
 //		u8 ReadValue;
@@ -253,28 +247,25 @@ int main (void) {
 	//motor_2_angle = 90;
 	//set_angles();
   // create 'thread' functions that start executing,
-  // example: tid_name = osThreadCreate (osThread(name), NULL);
+
 	path_thread_id = osThreadCreate(osThread(path_thread), NULL);
 	keypad_thread_id = osThreadCreate(osThread(keypad_thread), NULL);
 	set_xy_thread_id = osThreadCreate(osThread(set_xy_thread), NULL);
 	angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
 	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
 
-	osKernelStart ();                         // start thread execution 
-
-	CC2500_Init();
-	
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
+
+
 	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
+
+
 //	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
 	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
 	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
 
-	
-	
 	osKernelStart ();                         // start thread execution 
-#endif
 }
 
 void EXTI0_IRQHandler(void){

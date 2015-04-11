@@ -8,7 +8,6 @@
 #include "stm32f4xx_conf.h"
 #include "stm32f4xx_exti.h"
 #include "misc.h"
-#include <stdio.h>
 
 /* Generalize the file for transmitter and receiver on different boards */
 

@@ -297,12 +297,8 @@ void CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes) {
 /*
 sets transmitter to receive mode then receives transmitted data
 
-do it with interrupts or with an if statement if stuck
 */
 void CC2500_ReadRecvBuffer(uint8_t *buffer) {
-	//CC2500_Change_State (SRX);	
-//	CC2500_state = (status_state(CC2500_Strobe(SNOP)));
-//	if (CC2500_state == RX_STATE){
 		uint8_t NumBytesinFIFO;
 		CC2500_SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){
