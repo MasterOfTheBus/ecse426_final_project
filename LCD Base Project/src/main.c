@@ -276,7 +276,16 @@ osThreadDef(toggle, osPriorityNormal, 1, 0);
 int main (void) {
 	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
-
+ 
+	// initialize peripherals here
+	/* LCD initiatization */
+  LCD_Init();
+  
+  /* LCD Layer initiatization */
+  LCD_LayerInit();
+    
+  /* Enable the LTDC controler */
+  LTDC_Cmd(ENABLE);
   /* Set LCD foreground layer as the current layer */
   LCD_SetLayer(LCD_FOREGROUND_LAYER);
 	LCD_Clear(LCD_COLOR_WHITE);
@@ -294,7 +303,7 @@ int main (void) {
 	drawLine_thread_id = osThreadCreate(osThread(drawLine_thread), NULL);
 	blinkLine_thread_id = osThreadCreate(osThread(blinkLine_thread), NULL);		
 
-	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
+	//RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
 	//TransmitData_thread = osThreadCreate(osThread(TransmitData), NULL);
 	//toggle_thread = osThreadCreate(osThread(toggle), NULL);
 	
