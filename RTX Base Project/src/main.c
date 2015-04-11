@@ -20,6 +20,8 @@
 #define SENDSIG 0x02
 #define NEWDATA_SIG 0x04
 
+uint8_t result;
+
 double pitch;
 double roll;
 
@@ -32,6 +34,7 @@ double x_path[array_length] = {0};
 double y_path[array_length] = {0};
 
 
+int board[9];
 int direction;
 int mode;
 int shape;
@@ -64,9 +67,11 @@ void set_xy_thread(void const *argument){
 			else if(roll > 30) new_y = current_y - 0.2;
 			
 			goTo (new_x,new_y);
-			
-			osDelay(50);
+			uint8_t pkt;
+			//makeCallbackPkt(&pkt, (int8_t)new_x, (int8_t)new_y, 0);
+			//CC2500_Transmit(&pkt, 1);
 		}
+		osDelay(50);
 	}
 }
 
@@ -92,9 +97,11 @@ void ReceiveData(void const *argument){
 			CC2500_ReadRecvBuffer(&r_buffer);
 			if (r_buffer != prev && status != RX_STATE) {
 				// processing for non-repeated data
+				
 				printf("read: 0x%02x\n", r_buffer);
-
-				//osSignalSet(keypad_thread_id, NEWDATA_SIG);
+				result=r_buffer & 0x1f;
+				printf("result: %d\n", result);
+				osSignalSet(keypad_thread_id, NEWDATA_SIG);
 			}
 		}
 	}
@@ -105,8 +112,8 @@ void ReceiveData(void const *argument){
 void keypad_thread(void const *argument){
 	while(1){
 		// wait for a signal from wireless instead of reading keypad~
-		//Keypad_read();
 		osSignalWait(NEWDATA_SIG, osWaitForever);
+		Keypad_read();
 		
 		if (send == 1){
 			if (shape == 0 && direction == RESET){ // move to bottom left corner
@@ -114,26 +121,32 @@ void keypad_thread(void const *argument){
 				osDelay(500);
 				goTo(-7, 6);
 			}
-			printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
+			//printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
 			if(mode == TicTacToe){
-				int board[9];
 				if (shape == BOARD){
 					osSignalSet(drawBoard_thread_id, 0x01);
 					osDelay(19000);
-					board_init(board);
 					
+					board_init(board);
+
 					int move = AI(board);
 					drawX(move);
 					osSignalSet (path_thread_id, 0x01);
 					osDelay(2000);
 				} else if(checkWin(board) == 9) {//if (shape == O){
 					printf("draw O...\n");
+					printf("direction: %d\n", direction);
 					if(board[direction-1] == 0){
 						drawO(direction);
 						board[direction-1] = 1;
 						osSignalSet (path_thread_id, 0x01);
 						osDelay(7000);
 						int move = AI(board);
+						printf("move: %d\n", move);
+						for(int a = 0; a < 9; a++){
+							printf("%d ", board[a]);
+						}
+						printf("\n");
 						if(move != 0){
 							printf("draw X...\n");
 							drawX(move);
@@ -240,25 +253,14 @@ int main (void) {
 //		ReadValue = GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_6);
 //		printf("%d\n", ReadValue);
 //	}
-	
-	// angle from 0 to 180
-	//motor_0_angle = 90;
-	//motor_1_angle = 120;
-	//motor_2_angle = 90;
-	//set_angles();
-  // create 'thread' functions that start executing,
+
 
 	path_thread_id = osThreadCreate(osThread(path_thread), NULL);
 	keypad_thread_id = osThreadCreate(osThread(keypad_thread), NULL);
 	set_xy_thread_id = osThreadCreate(osThread(set_xy_thread), NULL);
 	angle_thread_id = osThreadCreate(osThread(angle_thread), NULL);
-	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
-
-  // create 'thread' functions that start executing,
-  // example: tid_name = osThreadCreate (osThread(name), NULL);
-
-
 	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
+	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
 
 
 //	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);

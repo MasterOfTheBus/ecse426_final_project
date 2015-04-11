@@ -30,6 +30,7 @@ extern int direction;
 extern int mode;
 extern int shape;
 extern int send;
+extern uint8_t result;
 
 /**
   * @brief Configure a GPIO port and Initialize it.

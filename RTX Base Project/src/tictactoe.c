@@ -66,40 +66,11 @@ int AI(int board[9]){
 	for(int i = 0; i < 9; i++){
 		if(board[next[i]] == 0){
 			board[next[i]] = -1;
-			return next[i] +1;
+			return next[i] + 1;
 		}
 	}
 	return 0;
-//	switch(state){
-//		case 0:
-//			board[0]= -1;
-//			state =1;
-//			return 1;
-//			break;
-//		case 1:
-//			if(board[5]){
-//				state = 2;
-//				board[9] = -1;
-//				return 9;
-//			}
-//			else if(board[9]){
-//				state = 3;
-//				board[3] = -1;
-//				return 3;
-//			}
-//			else{
-//				state = 4;
-//				board[9] = -1;
-//				return 9;
-//			}
-//			break;
-//		case 2:
-//			break;
-//		case 6:
-//			break;
-//		case 8:
-//			break;
-//	}
+
 }
 
 

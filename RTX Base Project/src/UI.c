@@ -3,7 +3,6 @@
 #include "stm32f4xx_conf.h"
 #include "UI.h"
 
-int result = 0;
 int count=0;
 int lastResult;
 int userInput;
@@ -36,184 +35,185 @@ void configInit_GPIO(GPIO_TypeDef* GPIOx,
 
 
 
-void Keypad_readDigit(){
-	
-	configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
-										GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
-										GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
-										GPIO_PuPd_DOWN);
-	configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
-										GPIO_Pin_13,
-										GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
-										GPIO_PuPd_DOWN);
-	// Set the colomns high
-	GPIO_WriteBit(GPIOE, GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6, Bit_SET);
-	GPIO_WriteBit(GPIOC, GPIO_Pin_13, Bit_SET);	
-	
-	
-	// Read the rows
-	configInit_GPIO(GPIOB, RCC_AHB1Periph_GPIOB,
-										GPIO_Pin_4 | GPIO_Pin_5,
-										GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-										GPIO_PuPd_DOWN);	
-	configInit_GPIO(GPIOD, RCC_AHB1Periph_GPIOD,
-										GPIO_Pin_1 | GPIO_Pin_2,
-										GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-										GPIO_PuPd_DOWN);	
-										
-	if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4)== Bit_RESET && GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == Bit_RESET && GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_1) == Bit_RESET &&	GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_2) == Bit_RESET){
-		// Nothing is pressed
-		result = 99;
-	} 
-	
-	else{
-	
-		// First row
-		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == Bit_SET){
-			// Set this row to output
-			configInit_GPIO(GPIOB, RCC_AHB1Periph_GPIOB,
-											GPIO_Pin_4,
-											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);	
-			// Set this row high
-			GPIO_WriteBit(GPIOB, GPIO_Pin_4, Bit_SET);			
-			
-			// Read the colomns
-			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
-											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
-											GPIO_Pin_13,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
-				result = 1;
-			}
-			
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
-				result = 3;
-			}
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
-				result = 10; // A
-			}
-			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
-				result = 2;
-			}
-		
-		} 
-		// Second row
-		else if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == Bit_SET){
-			// Set this row to output
-			configInit_GPIO(GPIOB, RCC_AHB1Periph_GPIOB,
-											GPIO_Pin_5,
-											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);	
-			// Set this row high
-			GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_SET);			
-			
-			// Read the colomns
-			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
-											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
-											GPIO_Pin_13,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
-				result = 4;
-			}
-			
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
-				result = 6;
-			}
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
-				result = 11; // B
-			}
-			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
-				result = 5;
-			}
-			
-		} 
-		
-		// Third row
-		else if (GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_1) == Bit_SET){
-			// Set this row to output
-			configInit_GPIO(GPIOD, RCC_AHB1Periph_GPIOD,
-											GPIO_Pin_1,
-											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);	
-			// Set this row high
-			GPIO_WriteBit(GPIOD, GPIO_Pin_1, Bit_SET);			
-			
-			// Read the colomns
-			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
-											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
-											GPIO_Pin_13,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
-				result = 7;
-			}
+//void Keypad_readDigit(){
+//	
+//	configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
+//										GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
+//										GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
+//										GPIO_PuPd_DOWN);
+//	configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
+//										GPIO_Pin_13,
+//										GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
+//										GPIO_PuPd_DOWN);
+//	// Set the colomns high
+//	GPIO_WriteBit(GPIOE, GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6, Bit_SET);
+//	GPIO_WriteBit(GPIOC, GPIO_Pin_13, Bit_SET);	
+//	
+//	
+//	// Read the rows
+//	configInit_GPIO(GPIOB, RCC_AHB1Periph_GPIOB,
+//										GPIO_Pin_4 | GPIO_Pin_5,
+//										GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//										GPIO_PuPd_DOWN);	
+//	configInit_GPIO(GPIOD, RCC_AHB1Periph_GPIOD,
+//										GPIO_Pin_1 | GPIO_Pin_2,
+//										GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//										GPIO_PuPd_DOWN);	
+//										
+//	if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4)== Bit_RESET && GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == Bit_RESET && GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_1) == Bit_RESET &&	GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_2) == Bit_RESET){
+//		// Nothing is pressed
+//		result = 99;
+//	} 
+//	
+//	else{
+//	
+//		// First row
+//		if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4) == Bit_SET){
+//			// Set this row to output
+//			configInit_GPIO(GPIOB, RCC_AHB1Periph_GPIOB,
+//											GPIO_Pin_4,
+//											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);	
+//			// Set this row high
+//			GPIO_WriteBit(GPIOB, GPIO_Pin_4, Bit_SET);			
+//			
+//			// Read the colomns
+//			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
+//											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
+//											GPIO_Pin_13,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
+//				result = 1;
+//			}
+//			
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
+//				result = 3;
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
+//				result = 10; // A
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
+//				result = 2;
+//			}
+//		
+//		} 
+//		// Second row
+//		else if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5) == Bit_SET){
+//			// Set this row to output
+//			configInit_GPIO(GPIOB, RCC_AHB1Periph_GPIOB,
+//											GPIO_Pin_5,
+//											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);	
+//			// Set this row high
+//			GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_SET);			
+//			
+//			// Read the colomns
+//			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
+//											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
+//											GPIO_Pin_13,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
+//				result = 4;
+//			}
+//			
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
+//				result = 6;
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
+//				result = 11; // B
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
+//				result = 5;
+//			}
+//			
+//		} 
+//		
+//		// Third row
+//		else if (GPIO_ReadInputDataBit(GPIOD, GPIO_Pin_1) == Bit_SET){
+//			// Set this row to output
+//			configInit_GPIO(GPIOD, RCC_AHB1Periph_GPIOD,
+//											GPIO_Pin_1,
+//											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);	
+//			// Set this row high
+//			GPIO_WriteBit(GPIOD, GPIO_Pin_1, Bit_SET);			
+//			
+//			// Read the colomns
+//			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
+//											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
+//											GPIO_Pin_13,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
+//				result = 7;
+//			}
 
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
-				result = 9;
-			}
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
-				result = 12; // C
-			}
-			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
-				result = 8;
-			}
-		
-		}
-		
-		// Fourth row
-		else{
-			// Set this row to output
-			configInit_GPIO(GPIOD, RCC_AHB1Periph_GPIOD,
-											GPIO_Pin_2,
-											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);	
-			// Set this row high
-			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);			
-			
-			// Read the colomns
-			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
-											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
-											GPIO_Pin_13,
-											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
-											GPIO_PuPd_DOWN);
-			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
-				result = 21; // Mode *
-			}
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
-				result = 22; // Mode #
-			}
-			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
-				result = 13; // Enter
-			}
-			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
-				result = 0;
-			}
-			
-		}
-	}
-	
-}
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
+//				result = 9;
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
+//				result = 12; // C
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
+//				result = 8;
+//			}
+//		
+//		}
+//		
+//		// Fourth row
+//		else{
+//			// Set this row to output
+//			configInit_GPIO(GPIOD, RCC_AHB1Periph_GPIOD,
+//											GPIO_Pin_2,
+//											GPIO_Mode_OUT, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);	
+//			// Set this row high
+//			GPIO_WriteBit(GPIOD, GPIO_Pin_2, Bit_SET);			
+//			
+//			// Read the colomns
+//			configInit_GPIO(GPIOE, RCC_AHB1Periph_GPIOE,
+//											GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			configInit_GPIO(GPIOC, RCC_AHB1Periph_GPIOC,
+//											GPIO_Pin_13,
+//											GPIO_Mode_IN, GPIO_Speed_100MHz, GPIO_OType_PP,
+//											GPIO_PuPd_DOWN);
+//			if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_6) == Bit_SET){
+//				result = 21; // Mode *
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_4) == Bit_SET){
+//				result = 22; // Mode #
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_5) == Bit_SET){
+//				result = 13; // Enter
+//			}
+//			else if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13) == Bit_SET){
+//				result = 0;
+//			}
+//			
+//		}
+//	}
+//	
+//}
 
 
 
 void Keypad_read(){
 	send = 0;
-	Keypad_readDigit();
+	
+	//Keypad_readDigit();
 	if (result != lastResult && result != 99/*&& count<5*/){
 		if (result == 21) mode = STAR;
 		if (result == 22) {

@@ -82,7 +82,7 @@ void path_thread(void const *argument){
 		osDelay(1000);
 		for(int i=1; i < 50; i++){
 			goTo(x_path[i], y_path[i]);
-			printf("position : {%f,%f}\n", x_path[i], y_path[i]);
+			//printf("position : {%f,%f}\n", x_path[i], y_path[i]);
 			set_angles();
 			osDelay(50);
 		if(x_path[i]==x_path[i-1]&&y_path[i]==y_path[i-1]) break;
