@@ -45,11 +45,7 @@ void ReceiveData(void const *argument){
 			if (r_buffer != prev && status != RX_STATE) {
 				// processing for non-repeated data
 				printf("read: 0x%02x\n", r_buffer);
-#if 0
-				// send a confirmation packet to the sender
-				uint8_t pkt = CONFIRMATION_PKT;
-				CC2500_Transmit(&pkt, 1);
-#endif
+
 			}
 		}
 	}

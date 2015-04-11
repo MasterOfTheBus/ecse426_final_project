@@ -4,6 +4,7 @@
 #include "stm32f4xx_conf.h"
 #include "wireless.h"
 #include "packet.h"
+#include <stdio.h>
 
 // To test wireless module and SPI
 void wireless_testbench (void){
@@ -94,16 +95,16 @@ void wireless_testbench (void){
 #endif
 	// ---------------- Transmit testing --------------------
 #if 1
-	uint8_t i = 53;
-	uint8_t buff;
-	while (1) {
-		printf("transmitting: %i\n", i);
+	uint8_t i = 0;
+	//uint8_t buff;
+	while (i<11) {
 		uint8_t pkt;
-		makeLCD2MotorPkt(&pkt, 13, 0);
-		CC2500_Transmit(&i, 1);
-		CC2500_ReadRecvBuffer(&buff);
-		//i = (i + 1) % 10;
-
+		makeLCD2MotorPkt(&pkt, i, 0);
+		printf("transmitting: 0x%02x\n", pkt);
+		CC2500_Transmit(&pkt, 1);
+		//CC2500_ReadRecvBuffer(&buff);
+		i = (i + 1) % 17;
+		wireless_delay(10000000);
 	}
 #endif
 #if 0

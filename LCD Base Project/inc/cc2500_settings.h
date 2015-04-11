@@ -15,7 +15,7 @@
 
 #define VAL_CC2500_ADDR 		0x00	
 
-#define VAL_CC2500_CHANNR 	0x00 // group number 6 -> 48
+#define VAL_CC2500_CHANNR 	0x30 // group number 6 -> 48
 
 #define VAL_CC2500_FSCTRL1 	0x0C	
 #define VAL_CC2500_FSCTRL0 	0x00	

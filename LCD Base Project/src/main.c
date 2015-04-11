@@ -19,11 +19,12 @@
 #include "packet.h"
 
 #define TESTING 0
-#if TESTING
+//#if TESTING
 #include "tests.h"
-#endif
+//#endif
 
 #define RECVSIG 0x01
+#define SENDSIG 0x02
 
 static void delay(__IO uint32_t nCount)
 {
@@ -186,19 +187,57 @@ void example_1c(void const *argument){
 	}
 }
 #endif
+
+osThreadId RecvData_thread;
+osThreadId TransmitData_thread;
+
 void ReceiveData(void const *argument) {
 	uint8_t r_buffer;
 	uint8_t prev;
-	while (1) {
-		prev = r_buffer;
-		CC2500_Change_State (SRX);
-		osSignalWait(RECVSIG, osWaitForever);
-		CC2500_ReadRecvBuffer(&r_buffer);
-		uint8_t status = status_state(CC2500_Strobe(SNOP));
-		if (r_buffer != prev && status != RX_STATE) {
-			// processing for non-repeated data
-			printf("read: %i\n", r_buffer);
+	uint8_t not_idle = 1;
+	while (1){
+		if (not_idle) {
+			prev = r_buffer;
+			CC2500_Change_State (SRX);
+			osSignalWait(RECVSIG, osWaitForever);
 		}
+		uint8_t status = status_state(CC2500_Strobe(SNOP));
+		if (status != IDLE_STATE) {
+			not_idle = 0;
+			osDelay(100);
+		} else {
+			not_idle = 1;
+		}
+		if (not_idle) {
+			not_idle = 1;
+			CC2500_ReadRecvBuffer(&r_buffer);
+			if (r_buffer != prev && status != RX_STATE) {
+				// processing for non-repeated data
+				printf("read: 0x%02x\n", r_buffer);
+
+			}
+		}
+	}
+}
+
+osThreadId toggle_thread;
+
+void TransmitData(void const *argument) {
+	while (1) {
+		// wait for a signal to send
+		osSignalWait(SENDSIG, osWaitForever);
+		uint8_t pkt;
+		makeLCD2MotorPkt(&pkt, 13, 0);
+		printf("transmitting: 0x%02x\n", pkt);
+		CC2500_Transmit(&pkt, 1);
+	}
+}
+
+void toggle(void const *argument) {
+	while (1) {
+		osDelay(1);
+		osSignalSet(TransmitData_thread, SENDSIG);
+		osDelay(1000);
 	}
 }
 
@@ -207,13 +246,16 @@ void ReceiveData(void const *argument) {
 //osThreadDef(example_1c, osPriorityNormal, 1, 0);
 
 osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
+osThreadDef(TransmitData, osPriorityNormal, 1, 0);
+
+osThreadDef(toggle, osPriorityNormal, 1, 0);
 
 // ID for theads
 //osThreadId example_1a_thread;
 //osThreadId example_1b_thread;
 //osThreadId example_1c_thread;
 
-osThreadId RecvData_thread;
+
 
 /*
  * main: initialize and start the system
@@ -240,7 +282,7 @@ int main (void) {
 	
 	// initialize wireless SPI
 	CC2500_Init();
-	
+	//wireless_testbench();
   // create 'thread' functions that start executing,
   // example: tid_name = osThreadCreate (osThread(name), NULL);
 	
@@ -254,7 +296,10 @@ int main (void) {
 	//example_1a_thread = osThreadCreate(osThread(example_1a), NULL);
 	//example_1b_thread = osThreadCreate(osThread(example_1b), NULL);
 	//example_1c_thread = osThreadCreate(osThread(example_1c), NULL);
+	
 	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
+	//TransmitData_thread = osThreadCreate(osThread(TransmitData), NULL);
+	//toggle_thread = osThreadCreate(osThread(toggle), NULL);
 	
 	osKernelStart ();                         // start thread execution 
 }

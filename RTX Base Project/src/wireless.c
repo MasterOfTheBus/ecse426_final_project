@@ -282,9 +282,9 @@ void CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes) {
 	
 	CC2500_Change_State (SIDLE);
 	
-	uint8_t GDO2;
-	CC2500_SPI_Read(&GDO2, 0x00, 1); // check for filling past the threshold
-	if ((GDO2 & 0x1F) != 0x02) {
+	uint8_t NumBytesinFIFO;
+	CC2500_SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
+	if ((64-NumBytesinFIFO) >= num_bytes) {
 		CC2500_SPI_Write(buffer, CC2500REG_TX_FIFO, 0x01);
 	}
 	
