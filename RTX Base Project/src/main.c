@@ -44,19 +44,20 @@ void set_xy_thread(void const *argument){
 	//	printf("pitch: %f\n", pitch);
 	//	printf("x: %f\n", current_x);
 	//	printf("y: %f\n", current_y);
-		
-		double new_x = current_x;
-		double new_y = current_y;
-		
-		if(pitch < - 30) new_x = current_x + 0.2;
-		else if(pitch > 30) new_x = current_x - 0.2;
-		
-		if(roll < - 30) new_y = current_y + 0.2;
-		else if(roll > 30) new_y = current_y - 0.2;
-		
-		goTo (new_x,new_y);
-		
-		osDelay(50);
+		if(mode != TicTacToe){
+			double new_x = current_x;
+			double new_y = current_y;
+			
+			if(pitch < - 30) new_x = current_x + 0.2;
+			else if(pitch > 30) new_x = current_x - 0.2;
+			
+			if(roll < - 30) new_y = current_y + 0.2;
+			else if(roll > 30) new_y = current_y - 0.2;
+			
+			goTo (new_x,new_y);
+			
+			osDelay(50);
+		}
 	}
 }
 
@@ -116,7 +117,7 @@ void keypad_thread(void const *argument){
 								osDelay(500);
 								upDown(down);
 								for(float i=0; i<=4; i=i+0.1){
-									goTo(-4 + ((win - 3)*2), 11 + i);
+									goTo(-4 + ((win - 3)*2), 11 - i);
 									osDelay(50);
 								}
 								upDown(up);
