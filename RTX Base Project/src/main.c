@@ -8,6 +8,7 @@
 #include "stm32f4xx_conf.h"
 #include "motors.h"
 #include "wireless.h"
+
 #include "MEMS.h"
 #include "UI.h"
 #include "tictactoe.h"
@@ -36,6 +37,8 @@ osThreadId set_xy_thread_id;
 osThreadId angle_thread_id;
 osThreadId drawBoard_thread_id;
 
+osThreadId RecvData_thread;
+
 osThreadId keypad_thread_id;
 
 void set_xy_thread(void const *argument){
@@ -57,6 +60,47 @@ void set_xy_thread(void const *argument){
 			goTo (new_x,new_y);
 			
 			osDelay(50);
+		}
+	}
+}
+
+#include "packet.h"
+#include <stdio.h>
+
+#define TESTING 0 // 0 to not test
+#define RECVSIG 0x01
+
+#if TESTING
+#include "tests.h"
+#endif
+
+
+void ReceiveData(void const *argument){
+	uint8_t r_buffer;
+	uint8_t prev;
+	uint8_t not_idle = 1;
+	while (1){
+		if (not_idle) {
+			prev = r_buffer;
+			CC2500_Change_State (SRX);
+			osSignalWait(RECVSIG, osWaitForever);
+		}
+		uint8_t status = status_state(CC2500_Strobe(SNOP));
+		if (status != IDLE_STATE) {
+			not_idle = 0;
+			osDelay(100);
+		} else {
+			not_idle = 1;
+		}
+		if (not_idle) {
+			not_idle = 1;
+			CC2500_ReadRecvBuffer(&r_buffer);
+			if (r_buffer != prev && status != RX_STATE) {
+				// processing for non-repeated data
+				printf("read: 0x%02x\n", r_buffer);
+
+			}
+
 		}
 	}
 }
@@ -168,16 +212,14 @@ void keypad_thread(void const *argument){
 	}
 }
 
-void lift_thread(void const *argument){
 
-
-}
 
 osThreadDef(path_thread, osPriorityNormal, 1, 0);
 osThreadDef(set_xy_thread, osPriorityNormal, 1, 0);
 osThreadDef(angle_thread, osPriorityNormal, 1, 0);
 osThreadDef(drawBoard_thread, osPriorityNormal, 1, 0);
 
+osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
 
 osThreadDef(keypad_thread, osPriorityNormal, 1, 0);
 
@@ -186,9 +228,10 @@ osThreadDef(keypad_thread, osPriorityNormal, 1, 0);
  * main: initialize and start the system
  */
 int main (void) {
-	//
 
-	
+#if TESTING
+	wireless_testbench ();
+#else
 	
   osKernelInitialize ();                    // initialize CMSIS-RTOS
 	
@@ -218,9 +261,21 @@ int main (void) {
 	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
 
 	osKernelStart ();                         // start thread execution 
-	
-}
 
+	CC2500_Init();
+	
+  // create 'thread' functions that start executing,
+  // example: tid_name = osThreadCreate (osThread(name), NULL);
+	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
+//	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
+	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
+	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
+
+	
+	
+	osKernelStart ();                         // start thread execution 
+#endif
+}
 
 void EXTI0_IRQHandler(void){
 	if(EXTI_GetITStatus(EXTI_Line0) != RESET){
@@ -230,4 +285,21 @@ void EXTI0_IRQHandler(void){
 	}
 }
 
+void TIM3_IRQHandler(void)
+{
+	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
+	{
+		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
+//		osSignalSet(motor_0_thread_id, 0x01);
+//		osSignalSet(motor_1_thread_id, 0x01);
+//		osSignalSet(motor_2_thread_id, 0x01);
+	}
+}
+
+void EXTI15_10_IRQHandler(void) {
+	if (EXTI_GetITStatus(EXTI_Line14) != RESET) {
+		osSignalSet (RecvData_thread, RECVSIG);
+		EXTI_ClearITPendingBit(EXTI_Line14);
+	}
+}
 

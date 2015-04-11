@@ -38,6 +38,16 @@ double yBlink=100;
 int blink = 1;
 int done=0;
 
+#include "wireless.h"
+#include "packet.h"
+
+#define TESTING 0
+//#if TESTING
+#include "tests.h"
+//#endif
+
+#define RECVSIG 0x01
+#define SENDSIG 0x02
 
 static void delay(__IO uint32_t nCount)
 {
@@ -46,7 +56,6 @@ static void delay(__IO uint32_t nCount)
   {
   }
 }
-
 
 // ID for theads
 //osThreadId example_1a_thread_id;
@@ -62,13 +71,22 @@ osThreadId blinkTriangle_thread_id;
 osThreadId drawLine_thread_id;
 osThreadId blinkLine_thread_id;
 
-void wireless_receive(){ //set x1, x2
-	
-	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+  * @brief    Illustartes a simple shape draw and fill, and string dsiplay
+  * @function This function draws concentrated colour-filled circles. It also draw a square and a triangle. Some text at two
+              different font sizes is displayed.
+  * @param    None
+  * @retval   None
+  */
+
+void example_1a(void const *argument){
+	while(1){
+		/* Clear the LCD */ 
+    LCD_Clear(LCD_COLOR_WHITE);
+	}
 }
-void wireless_send(){
-	
-}
+
 void keypad_thread(void const *argument){
 	int lastMode;
 	int lastDirection;
@@ -177,6 +195,40 @@ void keypad_thread(void const *argument){
 
 }
 
+osThreadId RecvData_thread;
+osThreadId TransmitData_thread;
+
+void ReceiveData(void const *argument) {
+	uint8_t r_buffer;
+	uint8_t prev;
+	uint8_t not_idle = 1;
+	while (1){
+		if (not_idle) {
+			prev = r_buffer;
+			CC2500_Change_State (SRX);
+			osSignalWait(RECVSIG, osWaitForever);
+		}
+		uint8_t status = status_state(CC2500_Strobe(SNOP));
+		if (status != IDLE_STATE) {
+			not_idle = 0;
+			osDelay(100);
+		} else {
+			not_idle = 1;
+		}
+		if (not_idle) {
+			not_idle = 1;
+			CC2500_ReadRecvBuffer(&r_buffer);
+			if (r_buffer != prev && status != RX_STATE) {
+				// processing for non-repeated data
+				printf("read: 0x%02x\n", r_buffer);
+
+			}
+		}
+	}
+}
+
+osThreadId toggle_thread;
+
 //osThreadDef(example_1a, osPriorityNormal, 1, 0);
 //osThreadDef(example_1b, osPriorityNormal, 1, 0);
 //osThreadDef(example_1c, osPriorityNormal, 1, 0);
@@ -190,44 +242,57 @@ osThreadDef(blinkTriangle_thread, osPriorityNormal, 1, 0);
 osThreadDef(drawLine_thread, osPriorityNormal, 1, 0);
 osThreadDef(blinkLine_thread, osPriorityNormal, 1, 0);
 
+void TransmitData(void const *argument) {
+	while (1) {
+		// wait for a signal to send
+		osSignalWait(SENDSIG, osWaitForever);
+		uint8_t pkt;
+		makeLCD2MotorPkt(&pkt, 13, 0);
+		printf("transmitting: 0x%02x\n", pkt);
+		CC2500_Transmit(&pkt, 1);
+	}
+}
+
+void toggle(void const *argument) {
+	while (1) {
+		osDelay(1);
+		osSignalSet(TransmitData_thread, SENDSIG);
+		osDelay(1000);
+	}
+}
+
+//osThreadDef(example_1a, osPriorityNormal, 1, 0);
+//osThreadDef(example_1b, osPriorityNormal, 1, 0);
+//osThreadDef(example_1c, osPriorityNormal, 1, 0);
+
+osThreadDef(ReceiveData, osPriorityNormal, 1, 0);
+osThreadDef(TransmitData, osPriorityNormal, 1, 0);
+
+osThreadDef(toggle, osPriorityNormal, 1, 0);
+
+// ID for theads
+//osThreadId example_1a_thread;
+//osThreadId example_1b_thread;
+//osThreadId example_1c_thread;
+
 
 /*
  * main: initialize and start the system
  */
 int main (void) {
 	
-  osKernelInitialize ();                    // initialize CMSIS-RTOS
+#if TESTING
+	wireless_testbench();
+#endif
 	
-  // initialize peripherals here
-	/* LCD initiatization */
-  LCD_Init();
-  
-  /* LCD Layer initiatization */
-  LCD_LayerInit();
-    
-  /* Enable the LTDC controler */
-  LTDC_Cmd(ENABLE);
-  
+  osKernelInitialize ();                    // initialize CMSIS-RTOS
+
   /* Set LCD foreground layer as the current layer */
   LCD_SetLayer(LCD_FOREGROUND_LAYER);
 	LCD_Clear(LCD_COLOR_WHITE);
 	
-
-
-	
-  // create 'thread' functions that start executing,
-  // example: tid_name = osThreadCreate (osThread(name), NULL);
-	
-	/*******************************************************
-	         Uncomment the example you want to see
-	example_1a: Simple shape draw, fill and text display
-	example_1b: bitmap image display
-	example_1c: Simple animation
-	********************************************************/
-	
-	//example_1a_thread = osThreadCreate(osThread(example_1a), NULL);
-	//example_1b_thread = osThreadCreate(osThread(example_1b), NULL);
-	//example_1c_thread = osThreadCreate(osThread(example_1c), NULL);
+	// initialize wireless SPI
+	CC2500_Init();
 
 	keypad_thread_id = osThreadCreate(osThread(keypad_thread), NULL);
 	drawSquare_thread_id = osThreadCreate(osThread(drawSquare_thread), NULL);
@@ -239,8 +304,17 @@ int main (void) {
 	drawLine_thread_id = osThreadCreate(osThread(drawLine_thread), NULL);
 	blinkLine_thread_id = osThreadCreate(osThread(blinkLine_thread), NULL);		
 	
+	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
+	//TransmitData_thread = osThreadCreate(osThread(TransmitData), NULL);
+	//toggle_thread = osThreadCreate(osThread(toggle), NULL);
+	
 	osKernelStart ();                         // start thread execution 
 }
 				
 
-
+void EXTI9_5_IRQHandler(void) {
+	if (EXTI_GetITStatus(EXTI_Line5) != RESET) {
+		osSignalSet (RecvData_thread, RECVSIG);
+		EXTI_ClearITPendingBit(EXTI_Line5);
+	}
+}
