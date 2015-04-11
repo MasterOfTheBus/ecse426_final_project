@@ -185,7 +185,14 @@ void Keypad_read(){
 	send = 0;
 	Keypad_readDigit();
 	//printf("result: %i\n", result);
+	
 	if (result != lastResult && result != 99/*&& count<5*/){
+		
+		uint8_t pkt;
+		makeLCD2MotorPkt(&pkt, result, 0);
+		printf("transmitting: 0x%02x\n", pkt);
+		CC2500_Transmit(&pkt, 1);
+		
 		drawn = 0;
 		if (result == 21) mode = STAR;
 		if (result == 22) {

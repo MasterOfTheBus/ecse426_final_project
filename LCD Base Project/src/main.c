@@ -53,9 +53,6 @@ static void delay(__IO uint32_t nCount)
 }
 
 // ID for theads
-//osThreadId example_1a_thread_id;
-//osThreadId example_1b_thread_id;
-//osThreadId example_1c_thread_id;
 osThreadId keypad_thread_id;
 osThreadId drawSquare_thread_id;
 osThreadId blinkSquare_thread_id;
@@ -70,22 +67,6 @@ osThreadId RecvData_thread;
 osThreadId TransmitData_thread;
 
 osThreadId toggle_thread;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
-  * @brief    Illustartes a simple shape draw and fill, and string dsiplay
-  * @function This function draws concentrated colour-filled circles. It also draw a square and a triangle. Some text at two
-              different font sizes is displayed.
-  * @param    None
-  * @retval   None
-  */
-
-void example_1a(void const *argument){
-	while(1){
-		/* Clear the LCD */ 
-    LCD_Clear(LCD_COLOR_WHITE);
-	}
-}
 
 void keypad_thread(void const *argument){
 	int lastMode;
@@ -235,9 +216,6 @@ void TransmitData(void const *argument) {
 	}
 }
 
-//osThreadDef(example_1a, osPriorityNormal, 1, 0);
-//osThreadDef(example_1b, osPriorityNormal, 1, 0);
-//osThreadDef(example_1c, osPriorityNormal, 1, 0);
 osThreadDef(keypad_thread, osPriorityNormal, 1, 0);
 osThreadDef(drawSquare_thread, osPriorityNormal, 1, 0);
 osThreadDef(blinkSquare_thread, osPriorityNormal, 1, 0);
@@ -259,15 +237,6 @@ void toggle(void const *argument) {
 	}
 }
 osThreadDef(toggle, osPriorityNormal, 1, 0);
-//osThreadDef(example_1a, osPriorityNormal, 1, 0);
-//osThreadDef(example_1b, osPriorityNormal, 1, 0);
-//osThreadDef(example_1c, osPriorityNormal, 1, 0);
-
-
-// ID for theads
-//osThreadId example_1a_thread;
-//osThreadId example_1b_thread;
-//osThreadId example_1c_thread;
 
 
 /*
@@ -304,8 +273,8 @@ int main (void) {
 	blinkLine_thread_id = osThreadCreate(osThread(blinkLine_thread), NULL);		
 
 	//RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
-	//TransmitData_thread = osThreadCreate(osThread(TransmitData), NULL);
-	//toggle_thread = osThreadCreate(osThread(toggle), NULL);
+//	TransmitData_thread = osThreadCreate(osThread(TransmitData), NULL);
+//	toggle_thread = osThreadCreate(osThread(toggle), NULL);
 	
 	osKernelStart ();                         // start thread execution 
 }

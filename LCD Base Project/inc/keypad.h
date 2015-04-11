@@ -4,6 +4,8 @@
 
 #include "stm32f4xx_conf.h"
 #include "stm32f4xx_tim.h"
+#include "wireless.h"
+#include "packet.h"
 
 #define STAR 1
 #define TicTacToe 2
