@@ -262,11 +262,6 @@ int main (void) {
 	RecvData_thread = osThreadCreate(osThread(ReceiveData), NULL);
 	drawBoard_thread_id = osThreadCreate(osThread(drawBoard_thread), NULL);
 
-
-//	motor_0_thread_id = osThreadCreate(osThread(motor_0_thread), NULL);
-	//motor_1_thread_id = osThreadCreate(osThread(motor_1_thread), NULL);
-	//motor_2_thread_id = osThreadCreate(osThread(motor_2_thread), NULL);
-
 	osKernelStart ();                         // start thread execution 
 }
 
@@ -283,9 +278,6 @@ void TIM3_IRQHandler(void)
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET)
 	{
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
-//		osSignalSet(motor_0_thread_id, 0x01);
-//		osSignalSet(motor_1_thread_id, 0x01);
-//		osSignalSet(motor_2_thread_id, 0x01);
 	}
 }
 

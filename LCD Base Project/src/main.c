@@ -194,7 +194,6 @@ void ReceiveData(void const *argument) {
 			not_idle = 1;
 		}
 		if (not_idle) {
-			not_idle = 1;
 			CC2500_ReadRecvBuffer(&r_buffer);
 			if (r_buffer != prev && status != RX_STATE) {
 				// processing for non-repeated data
