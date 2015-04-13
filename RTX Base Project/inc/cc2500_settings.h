@@ -1,4 +1,13 @@
-
+/**
+   @file cc2500_settings.h
+   @brief Configuration Register settings for the TI MSP430-CC2500 Wireless Chipset
+	 
+	 VAL_CC2500_CHANNR is set to 0x30 for group 6 (6 x 8).
+	 VAL_CC2500_MCSM1 is set to 0x00 so that the both the transmitter and reciever switch 
+	 automatically to IDLE state when finished transmitting or receivng a packet.
+	 
+   @date 2015/04/14
+*/
 
 /**
   * @brief  CC2500 Register settings
@@ -34,7 +43,7 @@
 #define VAL_CC2500_DEVIATN 	0x00	
 
 
-#define VAL_CC2500_MCSM1 		0x02	// switch to idle when received; stay in tx when sent
+#define VAL_CC2500_MCSM1 		0x00	// switch to idle when received; stay in tx when sent
 #define VAL_CC2500_MCSM0 		0x18	
 
 #define VAL_CC2500_FOCCFG 	0x1D	
