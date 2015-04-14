@@ -120,6 +120,7 @@ void keypad_thread(void const *argument){
 				upDown(up);
 				osDelay(500);
 				goTo(-7, 6);
+				osDelay(500);
 			}
 			//printf("mode: %i \nshape: %i\ndirection: %i\n", mode, shape, direction);
 			if(mode == TicTacToe){
@@ -202,7 +203,7 @@ void keypad_thread(void const *argument){
 				}
 				
 			
-			}else{
+			}else if(direction != RESET){
 				
 				if (shape==1) drawSquare(current_x,current_y);
 				if (shape==2) drawRectangle(current_x,current_y);

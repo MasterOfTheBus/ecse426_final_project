@@ -182,8 +182,8 @@ void drawSquare(double x, double y){
 
 void drawRectangle(double x, double y){
 	
-	if(x < x_min+rect_x) x = x_min+rect_x;
-	if(y < y_min+rect_y) y = y_min+rect_y;
+	if(x < x_min+rect_y) x = x_min+rect_y + 0.5;
+	if(y < y_min+rect_x) y = y_min+rect_x + 0.5;
 	
 	x_path[0] = x;
 	y_path[0] = y;
@@ -246,8 +246,8 @@ void drawTriangle(double x, double y){
 
 void drawSegment(double x, double y, double angle){
 	
-	if(x < x_min+triangle_side) x = x_min+triangle_side;
-	if(y > y_max-triangle_side) y = y_max-triangle_side;
+//	if(x < x_min+triangle_side) x = x_min+triangle_side;
+//	if(y > y_max-triangle_side) y = y_max-triangle_side;
 	
 	x_path[0] = x;
 	y_path[0] = y;
