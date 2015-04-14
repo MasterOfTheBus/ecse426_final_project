@@ -35,9 +35,9 @@ int drawn=0;
 int userInput;
 
 // For LCD
-double x1=90;
+double x1=215;
 double x2=90;
-double y1=130;
+double y1=30;
 double y2=100;
 double xBlink=90;
 double yBlink=100;
@@ -99,12 +99,14 @@ void keypad_thread(void const *argument){
 		
 		if (direction == RESET){
 			LCD_Clear(LCD_COLOR_WHITE);
-			x1=90;
-			y1=130;
+			x1=215;
+			y1=30;
 		}
 		if (mode == STAR){		//*
 			//printf("++++++++++SHAPE: %i\n", shape);
 			if (shape == SQUARE) {
+				x1=90;
+				y1=130;
 				if(blink == 0) {
 					osSignalSet (drawSquare_thread_id, 0x01);
 					lastShape = shape; 
@@ -118,6 +120,8 @@ void keypad_thread(void const *argument){
 				
 
 			}else if (shape == RECTANGLE) {
+				x1=90;
+				y1=130;
 				if(blink == 0) {
 					osSignalSet (drawRectangle_thread_id, 0x01);
 					lastShape = shape; 
@@ -130,6 +134,8 @@ void keypad_thread(void const *argument){
 				
 
 			}else if (shape == TRIANGLE) {
+				x1=90;
+				y1=130;
 				if(blink == 0) {
 					osSignalSet (drawTriangle_thread_id, 0x01);
 					lastShape = shape; 
@@ -141,7 +147,11 @@ void keypad_thread(void const *argument){
 				}
 
 			}else if (shape == 0 && direction != 500) {
-				if (lastShape != 0) LCD_Clear(LCD_COLOR_WHITE);
+				if (lastShape != 0){
+					LCD_Clear(LCD_COLOR_WHITE);
+					x1 = 215;
+					y1 = 30;
+				}
 				if(send ==1) blink =0;
 				else blink =1;
 				
