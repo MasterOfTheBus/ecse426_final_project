@@ -81,19 +81,22 @@ void ReceiveData(void const *argument){
 	uint8_t not_idle = 1;
 	while (1){
 		if (not_idle) {
+			// start a new receive cycle
 			prev = r_buffer;
 			CC2500_Change_State (SRX);
 			osSignalWait(RECVSIG, osWaitForever);
 		}
 		uint8_t status = status_state(CC2500_Strobe(SNOP));
 		if (status != IDLE_STATE) {
+			// status is not idle, have not recieved data
 			not_idle = 0;
 			osDelay(100);
 		} else {
+			// status is idle, received data
 			not_idle = 1;
 		}
 		if (not_idle) {
-			not_idle = 1;
+			// received data, read from FIFO
 			CC2500_ReadRecvBuffer(&r_buffer);
 			if (r_buffer != prev && status != RX_STATE) {
 				// processing for non-repeated data

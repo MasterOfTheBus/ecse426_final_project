@@ -5,6 +5,7 @@ __IO uint32_t Timeout = FLAG_TIMEOUT;
 
 uint8_t CC2500_state; // current state of wireless transmitter
 
+/* The state is bits 6-4 in the status byte. Apply a mask on those bits and shift right */
 uint8_t status_state(uint8_t status) {
 	return ((status & 0x70) >> 4);
 }
@@ -21,18 +22,21 @@ void CC2500_Change_State(uint8_t Strobe){
 	if (Strobe == SIDLE){
 		CC2500_state = (status_state(CC2500_Strobe(SIDLE)));
 		while (CC2500_state != IDLE_STATE){
+			// Wait until state has changed to the desired one
 			CC2500_state = (status_state(CC2500_Strobe(SNOP)));
 		}	
 	}
 	else if (Strobe == SRX){
 		CC2500_state = (status_state(CC2500_Strobe(SRX)));
 		while (CC2500_state != RX_STATE){
+			// Wait until state has changed to the desired one
 			CC2500_state = (status_state(CC2500_Strobe(SNOP)));
 		}	
 	}
 	else if (Strobe == STX){
 		CC2500_state = (status_state(CC2500_Strobe(STX)));
 		while (CC2500_state != TX_STATE){
+			// Wait until state has changed to the desired one
 			CC2500_state = (status_state(CC2500_Strobe(SNOP)));
 		}	
 	}	
@@ -61,7 +65,7 @@ uint8_t CC2500_Strobe(uint8_t Strobe){
 /*
 Initializes the low level interface used to drive the wireless components
 */
-static void CC2500_LowLevel_Init(void){
+void CC2500_LowLevel_Init(void){
   
 	GPIO_InitTypeDef GPIO_InitStructure;
   SPI_InitTypeDef  SPI_InitStructure;
@@ -80,7 +84,7 @@ static void CC2500_LowLevel_Init(void){
   GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MISO_SOURCE, CC2500_SPI_GPIO_AF); // MISO
 	GPIO_PinAFConfig(CC2500_SPI_GPIO_PORT, CC2500_SPI_MOSI_SOURCE, CC2500_SPI_GPIO_AF); // MOSI
 
-  GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF;
+  GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AF; // Alternate Functions
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -100,13 +104,13 @@ static void CC2500_LowLevel_Init(void){
   /* SPI configuration -------------------------------------------------------*/
 	// make sure you know why these are this way
   SPI_I2S_DeInit(CC2500_SPI);
-  SPI_InitStructure.SPI_Direction 				= SPI_Direction_2Lines_FullDuplex;
+  SPI_InitStructure.SPI_Direction 				= SPI_Direction_2Lines_FullDuplex; // Be able to receive status bytes
   SPI_InitStructure.SPI_DataSize 					= SPI_DataSize_8b;
   SPI_InitStructure.SPI_CPOL 							= SPI_CPOL_Low; 	// polarity as per section 3.1 of configuring cc2500
   SPI_InitStructure.SPI_CPHA 							= SPI_CPHA_1Edge; // phase as per section 3.1 of configuring cc2500
   SPI_InitStructure.SPI_NSS 							= SPI_NSS_Soft;
   SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;
-  SPI_InitStructure.SPI_FirstBit 					= SPI_FirstBit_MSB;
+  SPI_InitStructure.SPI_FirstBit 					= SPI_FirstBit_MSB; // First bit is Most significant
   SPI_InitStructure.SPI_CRCPolynomial 		= 7;
   SPI_InitStructure.SPI_Mode 							= SPI_Mode_Master; // master mode as per section 3.1
   SPI_Init(CC2500_SPI, &SPI_InitStructure);
@@ -116,7 +120,7 @@ static void CC2500_LowLevel_Init(void){
 
   // Configure GPIO PIN for Lis Chip select
   GPIO_InitStructure.GPIO_Pin 	= CC2500_SPI_NSS_PIN;
-  GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_OUT; // The master sets the chip select
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
@@ -126,7 +130,7 @@ static void CC2500_LowLevel_Init(void){
 	
 	/* Configure GPIO PINs to detect Interrupts */ //-------------------------------------------------------------------------------------------------------------
 	GPIO_InitTypeDef GPIO_InitStructure_Int;
-  GPIO_InitStructure.GPIO_Pin = CC2500_SPI_MISO_PIN; // The pin to read interrupt data from; the accelerometer in this case
+  GPIO_InitStructure.GPIO_Pin = CC2500_SPI_MISO_PIN; // The pin to read interrupt data from
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN; // input from GPIO
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -136,7 +140,7 @@ static void CC2500_LowLevel_Init(void){
 	SYSCFG_EXTILineConfig(CC2500_INT_PORT_SOURCE, CC2500_INT_PIN_SOURCE); // the interrupt port is GPIOB
 	
 	EXTI_InitTypeDef exti_init;
-	exti_init.EXTI_Line = EXTI_Line14; // line 0
+	exti_init.EXTI_Line = EXTI_Line14; // line 14
 	exti_init.EXTI_Mode = EXTI_Mode_Interrupt; // configuring an interrupt
 	exti_init.EXTI_Trigger = EXTI_Trigger_Rising; // rising for active high
 	exti_init.EXTI_LineCmd = ENABLE;
@@ -144,14 +148,15 @@ static void CC2500_LowLevel_Init(void){
 	
 	NVIC_InitTypeDef nvic_init;
 	nvic_init.NVIC_IRQChannel = EXTI15_10_IRQn; // exti line 14 matching exti
-	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x03; // high priority
-	nvic_init.NVIC_IRQChannelSubPriority = 0x03; // high priority
+	nvic_init.NVIC_IRQChannelPreemptionPriority = 0x03; // fairly high priority to make sure that data is sent
+	nvic_init.NVIC_IRQChannelSubPriority = 0x03; // fairly high priority
 	nvic_init.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&nvic_init);
 
   // Deselect : Chip Select high
   GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_NSS_PIN);
 	
+	// power up reset sequence
 	CC2500_CS_LOW();
 	delay(100);
 	CC2500_CS_HIGH();
@@ -168,7 +173,7 @@ static void CC2500_LowLevel_Init(void){
 	// Set to IDLE state
 	uint8_t state = status_state(CC2500_Strobe(SIDLE));
 	
-	while (state != 0x00) {
+	while (state != IDLE_STATE) {
 		state = status_state(CC2500_Strobe(SNOP));
 	}
 	
@@ -178,7 +183,7 @@ static void CC2500_LowLevel_Init(void){
 /*
 Sends a byte through SPI protocol
 */
-static uint8_t CC2500_SendByte(uint8_t byte){
+uint8_t CC2500_SendByte(uint8_t byte){
 	
 	// Loop while DR register is not empty
   Timeout = FLAG_TIMEOUT;
@@ -282,12 +287,14 @@ void CC2500_Transmit(uint8_t *buffer, uint16_t num_bytes) {
 	
 	CC2500_Change_State (SIDLE);
 	
+	// Write to the TX FIFO
 	uint8_t NumBytesinFIFO;
 	CC2500_SPI_Read(&NumBytesinFIFO, CC2500REG_TXBYTES, 0x02);
 	if ((64-NumBytesinFIFO) >= num_bytes) {
 		CC2500_SPI_Write(buffer, CC2500REG_TX_FIFO, 0x01);
 	}
 	
+	// Set state to transmit
 	CC2500_Change_State (STX);
 	while (status_state(CC2500_Strobe(SNOP)) != IDLE_STATE);
 	
@@ -299,6 +306,7 @@ sets transmitter to receive mode then receives transmitted data
 
 */
 void CC2500_ReadRecvBuffer(uint8_t *buffer) {
+	// Only read from the FIFO; assume data is there
 		uint8_t NumBytesinFIFO;
 		CC2500_SPI_Read(&NumBytesinFIFO, CC2500REG_RXBYTES, 0x02);
 		if (NumBytesinFIFO >= 0x01){

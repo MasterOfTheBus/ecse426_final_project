@@ -149,6 +149,8 @@ void CC2500_SPI_Write(uint8_t* pBuffer, uint8_t address, uint16_t bytesToWrite);
 /**
 	@brief Read from the FIFO receive buffer.
 	
+	Assumes that there is data to read from the buffer
+	
 	@param buffer The buffered to which the read data will be stored.
 	*/
 void CC2500_ReadRecvBuffer(uint8_t *buffer);

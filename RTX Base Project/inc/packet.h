@@ -37,8 +37,8 @@ void makeLCD2MotorPkt(uint8_t *pkt, uint8_t keypad_val, uint8_t state);
 	 -----------------------------
 	
 	@param pkt the packet to store the values
-	@param x The x position of the pen
-	@param y The y position of the pen
+	@param x The x position of the pen. Must satisfy -7 <= x <= 7
+	@param y The y position of the pen. Must satisfy 6 <= y <= 12
 	@param fail Indicate that the received packet contained corrupted information
 	*/
 uint8_t makeCallbackPkt(uint8_t *pkt, int8_t x, int8_t y, uint8_t fail);
